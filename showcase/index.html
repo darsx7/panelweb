@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eficell - Showcase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="showcase.css">
+</head>
+
+<body>
+    <!-- Canvas de red interactiva -->
+    <canvas id="networkCanvas"></canvas>
+
+    <!-- Selector de Templates (flotante) -->
+    <div class="template-selector" id="templateSelector">
+        <button class="template-toggle" id="templateToggle">
+            <span class="toggle-icon">🎨</span>
+            <span class="toggle-text">Temas</span>
+        </button>
+
+        <div class="template-panel" id="templatePanel">
+            <h3>Elige un Tema</h3>
+            <div class="template-options">
+                <button class="template-btn active" data-template="solar">
+                    <span class="template-preview" style="background: linear-gradient(135deg, #f59e0b, #fbbf24)"></span>
+                    <span class="template-name">Solar</span>
+                </button>
+                <button class="template-btn" data-template="ocean">
+                    <span class="template-preview" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4)"></span>
+                    <span class="template-name">Océano</span>
+                </button>
+                <button class="template-btn" data-template="forest">
+                    <span class="template-preview" style="background: linear-gradient(135deg, #10b981, #34d399)"></span>
+                    <span class="template-name">Bosque</span>
+                </button>
+                <button class="template-btn" data-template="sunset">
+                    <span class="template-preview" style="background: linear-gradient(135deg, #f43f5e, #fb7185)"></span>
+                    <span class="template-name">Atardecer</span>
+                </button>
+                <button class="template-btn" data-template="purple">
+                    <span class="template-preview" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa)"></span>
+                    <span class="template-name">Violeta</span>
+                </button>
+                <button class="template-btn" data-template="minimal">
+                    <span class="template-preview" style="background: linear-gradient(135deg, #71717a, #a1a1aa)"></span>
+                    <span class="template-name">Minimal</span>
+                </button>
+            </div>
+
+            <div class="template-effects">
+                <h4>Efecto de Red</h4>
+                <div class="effect-options">
+                    <button class="effect-btn active" data-effect="repel">Repeler</button>
+                    <button class="effect-btn" data-effect="attract">Atraer</button>
+                    <button class="effect-btn" data-effect="wave">Ondas</button>
+                    <button class="effect-btn" data-effect="glow">Brillo</button>
+                </div>
+            </div>
+
+            <div class="template-density">
+                <h4>Densidad: <span id="densityValue">40</span>px</h4>
+                <input type="range" id="densitySlider" min="20" max="80" value="40">
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal - Generado dinámicamente desde content.json -->
+    <main id="mainContent">
+        <!-- El contenido se inyecta desde showcase.js -->
+    </main>
+
+    <script src="showcase.js"></script>
+</body>
+
+</html>
