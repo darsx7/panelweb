@@ -1,0 +1,7 @@
+{
+    "gridDensity": 20,
+    "interactionRadius": 300,
+    "lineColor": "#ffffff",
+    "glowColor": "#000000",
+    "interactionType": "attract"
+}
