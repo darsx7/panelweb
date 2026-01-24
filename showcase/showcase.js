@@ -583,7 +583,7 @@ class Showcase {
                     <div class="about-video">
                         <div class="video-container">
                             <video autoplay loop muted playsinline>
-                                <source src="vid.mp4" type="video/mp4">
+                                <source src="video.webm" type="video/mp4">
                                 Tu navegador no soporta video.
                             </video>
                             <div class="video-overlay"></div>
@@ -1206,3 +1206,4 @@ class Showcase {
 document.addEventListener('DOMContentLoaded', () => {
     new Showcase();
 });
+
