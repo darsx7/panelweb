@@ -27,6 +27,7 @@ Prototipo interactivo con:
 
     <!-- Hoja de estilos principal -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="prototyper.css">
 
     <!-- Fuente Inter de Google Fonts (moderna y legible) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -233,11 +234,17 @@ Prototipo interactivo con:
     <script src="network.js"></script>
     <script src="style-editor.js"></script>
     <script src="editor.js"></script>
+    <script src="prototyper.js"></script>
+    <script src="inspector.js"></script>
+    <script src="palette.js"></script>
 
-    <!-- Script orquestador simple inline para manejar el dock -->
+    <!-- Script orquestador simple inline para manejar el dock (Legacy support + Prototyper bridge) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Manejador del Dock
+            // Manejador Básico del Dock para paneles Legacy (Red y Estilos)
+            // El Prototyper.js maneja la orquestación global, pero mantenemos esto
+            // para que los botones existentes sigan funcionando hasta que se migren totalmente.
+
             const dock = {
                 activePanel: null,
 
@@ -247,7 +254,6 @@ Prototipo interactivo con:
 
                     if (!panel) return;
 
-                    // Si este panel ya está activo, cerrarlo
                     if (this.activePanel === panel) {
                         panel.classList.remove('active');
                         btn.classList.remove('active');
@@ -255,14 +261,16 @@ Prototipo interactivo con:
                         return;
                     }
 
-                    // Cerrar panel activo anterior si existe
                     if (this.activePanel) {
                         this.activePanel.classList.remove('active');
-                        // Desactivar botón anterior (encontrar el botón que tiene clase active)
-                        document.querySelectorAll('.dock-btn.active').forEach(b => b.classList.remove('active'));
+                        document.querySelectorAll('.dock-btn.active').forEach(b => {
+                            // No desactivar el botón de Play Mode
+                            if (!b.classList.contains('mode-toggle')) {
+                                b.classList.remove('active');
+                            }
+                        });
                     }
 
-                    // Abrir nuevo panel
                     panel.classList.add('active');
                     btn.classList.add('active');
                     this.activePanel = panel;
@@ -273,7 +281,6 @@ Prototipo interactivo con:
             document.getElementById('dockNetworkBtn').addEventListener('click', () => {
                 dock.togglePanel('editPanel', 'dockNetworkBtn');
             });
-            // Cerrar desde la X del panel
             document.getElementById('closePanel').addEventListener('click', () => {
                  document.getElementById('editPanel').classList.remove('active');
                  document.getElementById('dockNetworkBtn').classList.remove('active');
@@ -281,18 +288,12 @@ Prototipo interactivo con:
             });
 
             // Style Panel
-            // El panel se crea dinámicamente con ID 'styleEditorPanel'
             document.getElementById('dockStyleBtn').addEventListener('click', () => {
                 dock.togglePanel('styleEditorPanel', 'dockStyleBtn');
             });
-            // La X del panel de estilos se maneja en style-editor.js, pero debemos sincronizar el botón del dock
-            // Para eso usamos un MutationObserver o event delegation, o modificamos style-editor.js (planificado).
 
-            // Content Mode
-            // Este es un toggle de estado, no un panel lateral (aunque tiene toolbar)
+            // Content Mode (Legacy) - Ahora integrado mejor con el sistema
             document.getElementById('dockContentBtn').addEventListener('click', () => {
-                // Simular click en el botón original de toggleEditMode (que está oculto o modificado)
-                // O mejor, invocar globalThis.contentEditor.toggleEditMode()
                 if (globalThis.contentEditor) {
                     globalThis.contentEditor.toggleEditMode();
                     document.getElementById('dockContentBtn').classList.toggle('active');
