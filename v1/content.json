@@ -1,0 +1,107 @@
+{
+    "siteName": "Eficell",
+    "hero": {
+        "title": "Energía Sostenible Para Tu Futuro",
+        "subtitle": "Soluciones integrales en energía solar, eficiencia energética e hidrógeno verde. Acompañamos a empresas, instituciones y comunidades desde la evaluación inicial hasta la implementación de sistemas sustentables.",
+        "ctaPrimary": "Solicitar Evaluación",
+        "ctaSecondary": "Conocer Servicios",
+        "stats": [
+            {
+                "number": "30%",
+                "label": "Ahorro Garantizado"
+            },
+            {
+                "number": "100%",
+                "label": "Compromiso Ambiental"
+            },
+            {
+                "number": "5",
+                "label": "Años de Experiencia"
+            }
+        ]
+    },
+    "services": {
+        "title": "Nuestros Servicios",
+        "items": [
+            {
+                "icon": "⚡",
+                "title": "Sistemas Fotovoltaicos",
+                "description": "Instalación profesional de sistemas monofásicos y trifásicos adaptados a tu consumo y necesidades energéticas."
+            },
+            {
+                "icon": "🔧",
+                "title": "Mantenimiento",
+                "description": "Servicio preventivo y correctivo para mantener tus paneles funcionando al máximo rendimiento."
+            },
+            {
+                "icon": "📊",
+                "title": "Auditorías Energéticas",
+                "description": "Diagnósticos de consumo y evaluación técnica-económica para optimizar tus recursos energéticos."
+            },
+            {
+                "icon": "🌱",
+                "title": "Consultoría Verde",
+                "description": "Asesoría en integración de renovables, reducción de huella de carbono y certificaciones energéticas."
+            }
+        ]
+    },
+    "benefits": {
+        "title": "Nuestros 5 Pilares",
+        "items": [
+            {
+                "icon": "🌍",
+                "title": "Sostenibilidad",
+                "description": "Reducimos la huella de carbono y promovemos el uso responsable de los recursos naturales."
+            },
+            {
+                "icon": "🤝",
+                "title": "Compromiso Social",
+                "description": "Trabajamos con comunidades, liceos y vecinos impulsando la educación ambiental."
+            },
+            {
+                "icon": "⚙️",
+                "title": "Excelencia Técnica",
+                "description": "Altos estándares y mejora continua con innovación tecnológica en cada proyecto."
+            },
+            {
+                "icon": "📚",
+                "title": "Educación",
+                "description": "Capacitación y transferencia de conocimientos para fortalecer capacidades locales."
+            },
+            {
+                "icon": "💚",
+                "title": "Valor Compartido",
+                "description": "Creamos empleo verde y relaciones de largo plazo basadas en confianza mutua."
+            }
+        ]
+    },
+    "about": {
+        "title": "¿Quiénes Somos?",
+        "description": "Eficell Consultores SpA es una empresa fundada por dos socios con sólida experiencia técnica, orientada a entregar soluciones integrales en energía y sostenibilidad.",
+        "mission": {
+            "title": "Misión",
+            "text": "Ser un agente de cambio desarrollando soluciones innovadoras en energía solar, hidrógeno verde y eficiencia energética para un uso responsable de los recursos."
+        },
+        "vision": {
+            "title": "Visión",
+            "text": "Consolidarnos como la consultora líder en sostenibilidad en Chile, reconocida por nuestra excelencia técnica y compromiso con soluciones que impulsen un cambio positivo."
+        },
+        "objective": "Reducir al menos un 30% los costos operativos energéticos y mejorar la huella de carbono de nuestros clientes en los próximos 5 años."
+    },
+    "contact": {
+        "title": "¿Listo Para el Cambio?",
+        "subtitle": "Obtén una evaluación gratuita y personalizada para tu proyecto energético"
+    },
+    "footer": {
+        "copyright": "© 2026 Eficell Consultores SpA. Energía sostenible para un futuro mejor."
+    },
+    "nav": {
+        "items": [
+            "Inicio",
+            "Servicios",
+            "Nosotros",
+            "Contacto"
+        ],
+        "cta": "Cotizar Ahora"
+    }
+}
