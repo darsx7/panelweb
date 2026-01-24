@@ -4,7 +4,7 @@
  * ============================================
  * Sistema de edición visual para modificar textos
  * directamente en la página.
- * 
+ *
  * Características:
  * - Edición inline con contenteditable
  * - Renderizado dinámico de secciones
@@ -153,32 +153,29 @@ class ContentEditor {
     // ============================================
     createToolbar() {
         this.toolbar = document.createElement('div');
-        this.toolbar.id = 'contentEditorToolbar';
-        this.toolbar.className = 'content-editor-toolbar';
+        this.toolbar.id = 'contentActionsPanel';
+        // Usamos la nueva clase CSS definida para el panel lateral de acciones
+        this.toolbar.className = 'content-actions-panel';
+        // Oculto por defecto
+        this.toolbar.style.display = 'none';
+
         this.toolbar.innerHTML = `
-            <button id="toggleEditMode" class="editor-btn edit-mode-btn">
-                <span class="icon">🔓</span>
-                <span class="text">Modo Edición</span>
+            <h3 style="font-size:0.9rem; margin-bottom:0.5rem; color:var(--text-secondary);">Edición de Contenido</h3>
+            <button id="saveContentBtn" class="save-btn">
+                💾 Guardar
             </button>
-            <div class="editor-actions" style="display: none;">
-                <button id="saveContentBtn" class="editor-btn save-btn">
-                    <span class="icon">💾</span>
-                    <span class="text">Guardar</span>
+            <div class="btn-row">
+                <button id="exportContentBtn" class="export-btn">
+                    📤 Exportar
                 </button>
-                <button id="exportContentBtn" class="editor-btn export-btn">
-                    <span class="icon">📤</span>
-                    <span class="text">Exportar</span>
-                </button>
-                <button id="importContentBtn" class="editor-btn import-btn">
-                    <span class="icon">📥</span>
-                    <span class="text">Importar</span>
-                </button>
-                <input type="file" id="importContentFile" accept=".json" style="display: none;">
-                <button id="cancelEditBtn" class="editor-btn cancel-btn">
-                    <span class="icon">↩️</span>
-                    <span class="text">Cancelar</span>
+                <button id="importContentBtn" class="import-btn">
+                    📥 Importar
                 </button>
             </div>
+            <input type="file" id="importContentFile" accept=".json" style="display: none;">
+            <button id="cancelEditBtn" class="reset-btn">
+                ↩️ Cancelar
+            </button>
         `;
 
         document.body.appendChild(this.toolbar);
@@ -189,15 +186,17 @@ class ContentEditor {
     // MÉTODO: setupToolbarEvents
     // ============================================
     setupToolbarEvents() {
-        document.getElementById('toggleEditMode').addEventListener('click', () => this.toggleEditMode());
+        // El botón de toggle ahora se maneja externamente (desde el Dock)
+        // document.getElementById('toggleEditMode').addEventListener('click', () => this.toggleEditMode());
 
         document.getElementById('saveContentBtn').addEventListener('click', async () => {
             const btn = document.getElementById('saveContentBtn');
-            btn.querySelector('.text').textContent = 'Guardando...';
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Guardando...';
             const success = await this.saveContent();
-            btn.querySelector('.text').textContent = success ? '¡Guardado!' : 'Error';
+            btn.innerHTML = success ? '¡Guardado!' : 'Error';
             setTimeout(() => {
-                btn.querySelector('.text').textContent = 'Guardar';
+                btn.innerHTML = originalText;
             }, 2000);
         });
 
@@ -231,28 +230,25 @@ class ContentEditor {
     toggleEditMode() {
         this.isEditMode = !this.isEditMode;
 
-        const toggleBtn = document.getElementById('toggleEditMode');
-        const actions = this.toolbar.querySelector('.editor-actions');
+        // Mostrar/Ocultar panel de acciones
+        if (this.toolbar) {
+            this.toolbar.style.display = this.isEditMode ? 'flex' : 'none';
+        }
 
         if (this.isEditMode) {
-            toggleBtn.querySelector('.icon').textContent = '🔒';
-            toggleBtn.querySelector('.text').textContent = 'Editando...';
-            toggleBtn.classList.add('active');
-            actions.style.display = 'flex';
             document.body.classList.add('edit-mode');
-
             this.originalContent = structuredClone(this.content);
             this.enableEditing();
             this.enableDragAndDrop();
         } else {
-            toggleBtn.querySelector('.icon').textContent = '🔓';
-            toggleBtn.querySelector('.text').textContent = 'Modo Edición';
-            toggleBtn.classList.remove('active');
-            actions.style.display = 'none';
             document.body.classList.remove('edit-mode');
-
             this.disableEditing();
             this.disableDragAndDrop();
+
+            // Si se desactiva desde el Dock, asegúrate de cancelar cambios pendientes si no se guardó?
+            // Por simplicidad, asumimos que si cierras el modo, te quedas con lo que hay en pantalla (sin guardar en disco hasta que des a Guardar)
+            // O, si prefieres cancelar al salir sin guardar, deberíamos llamar a cancelEdit().
+            // Comportamiento actual: Mantiene cambios en memoria (visuales) pero no en disco.
         }
     }
 
@@ -506,7 +502,12 @@ class ContentEditor {
     cancelEdit() {
         this.content = structuredClone(this.originalContent);
         this.renderAllSections();
+        // Togglear también el botón del dock
         this.toggleEditMode();
+        // Sincronizar UI del Dock
+        const dockBtn = document.getElementById('dockContentBtn');
+        if (dockBtn) dockBtn.classList.remove('active');
+
         console.log('↩️ Cambios cancelados');
     }
 }
@@ -518,4 +519,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     const contentEditor = await ContentEditor.create();
     globalThis.contentEditor = contentEditor;
 });
-

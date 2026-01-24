@@ -143,130 +143,137 @@ class StyleEditor {
     createPanel() {
         this.panel = document.createElement('div');
         this.panel.id = 'styleEditorPanel';
-        this.panel.className = 'style-editor-panel';
+        // Añadida clase floating-module para integración con Dock
+        this.panel.className = 'style-editor-panel floating-module';
         this.panel.innerHTML = `
-            <div class="style-panel-header">
+            <div class="panel-header">
                 <h2>🎨 Estilos</h2>
                 <button id="closeStylePanel" class="close-btn">&times;</button>
             </div>
-            <div class="style-panel-content">
+            <div class="panel-content">
                 <!-- TARJETAS -->
-                <div class="style-section">
+                <div class="control-group">
                     <h3>🃏 Tarjetas</h3>
-                    <div class="style-control">
-                        <label>Opacidad Fondo: <span id="cardBgOpacityValue">${Math.round(this.styles.cards.bgOpacity * 100)}%</span></label>
-                        <input type="range" id="cardBgOpacity" min="0" max="30" value="${this.styles.cards.bgOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Radio Bordes: <span id="cardBorderRadiusValue">${this.styles.cards.borderRadius}px</span></label>
-                        <input type="range" id="cardBorderRadius" min="0" max="50" value="${this.styles.cards.borderRadius}">
-                    </div>
-                    <div class="style-control">
-                        <label>Padding: <span id="cardPaddingValue">${this.styles.cards.padding}rem</span></label>
-                        <input type="range" id="cardPadding" min="1" max="5" step="0.5" value="${this.styles.cards.padding}">
-                    </div>
-                    <div class="style-control">
-                        <label>Gap: <span id="cardGapValue">${this.styles.cards.gap}rem</span></label>
-                        <input type="range" id="cardGap" min="0.5" max="4" step="0.5" value="${this.styles.cards.gap}">
-                    </div>
-                    <div class="style-control">
-                        <label>Sombra</label>
-                        <input type="checkbox" id="cardShadow" ${this.styles.cards.shadow ? 'checked' : ''}>
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Opacidad Fondo: <span id="cardBgOpacityValue">${Math.round(this.styles.cards.bgOpacity * 100)}%</span></label>
+                    <input type="range" id="cardBgOpacity" min="0" max="30" value="${this.styles.cards.bgOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Radio Bordes: <span id="cardBorderRadiusValue">${this.styles.cards.borderRadius}px</span></label>
+                    <input type="range" id="cardBorderRadius" min="0" max="50" value="${this.styles.cards.borderRadius}">
+                </div>
+                <div class="control-group">
+                    <label>Padding: <span id="cardPaddingValue">${this.styles.cards.padding}rem</span></label>
+                    <input type="range" id="cardPadding" min="1" max="5" step="0.5" value="${this.styles.cards.padding}">
+                </div>
+                <div class="control-group">
+                    <label>Gap: <span id="cardGapValue">${this.styles.cards.gap}rem</span></label>
+                    <input type="range" id="cardGap" min="0.5" max="4" step="0.5" value="${this.styles.cards.gap}">
+                </div>
+                <div class="control-group">
+                    <label>Sombra</label>
+                    <input type="checkbox" id="cardShadow" ${this.styles.cards.shadow ? 'checked' : ''}>
                 </div>
 
                 <!-- BOTONES -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>🔘 Botones</h3>
-                    <div class="style-control">
-                        <label>Radio Bordes: <span id="btnBorderRadiusValue">${this.styles.buttons.borderRadius}px</span></label>
-                        <input type="range" id="btnBorderRadius" min="0" max="30" value="${this.styles.buttons.borderRadius}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Radio Bordes: <span id="btnBorderRadiusValue">${this.styles.buttons.borderRadius}px</span></label>
+                    <input type="range" id="btnBorderRadius" min="0" max="30" value="${this.styles.buttons.borderRadius}">
                 </div>
 
                 <!-- SECCIONES -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>📄 Secciones</h3>
-                    <div class="style-control">
-                        <label>Servicios Opacidad: <span id="servicesOpacityValue">${Math.round(this.styles.sections.servicesOpacity * 100)}%</span></label>
-                        <input type="range" id="servicesOpacity" min="0" max="100" value="${this.styles.sections.servicesOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Beneficios Opacidad: <span id="benefitsOpacityValue">${Math.round(this.styles.sections.benefitsOpacity * 100)}%</span></label>
-                        <input type="range" id="benefitsOpacity" min="0" max="100" value="${this.styles.sections.benefitsOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Contacto Opacidad: <span id="contactOpacityValue">${Math.round(this.styles.sections.contactOpacity * 100)}%</span></label>
-                        <input type="range" id="contactOpacity" min="0" max="100" value="${this.styles.sections.contactOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Padding: <span id="sectionPaddingValue">${this.styles.sections.padding}rem</span></label>
-                        <input type="range" id="sectionPadding" min="2" max="10" step="0.5" value="${this.styles.sections.padding}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Servicios Opacidad: <span id="servicesOpacityValue">${Math.round(this.styles.sections.servicesOpacity * 100)}%</span></label>
+                    <input type="range" id="servicesOpacity" min="0" max="100" value="${this.styles.sections.servicesOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Beneficios Opacidad: <span id="benefitsOpacityValue">${Math.round(this.styles.sections.benefitsOpacity * 100)}%</span></label>
+                    <input type="range" id="benefitsOpacity" min="0" max="100" value="${this.styles.sections.benefitsOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Contacto Opacidad: <span id="contactOpacityValue">${Math.round(this.styles.sections.contactOpacity * 100)}%</span></label>
+                    <input type="range" id="contactOpacity" min="0" max="100" value="${this.styles.sections.contactOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Padding: <span id="sectionPaddingValue">${this.styles.sections.padding}rem</span></label>
+                    <input type="range" id="sectionPadding" min="2" max="10" step="0.5" value="${this.styles.sections.padding}">
                 </div>
 
                 <!-- TIPOGRAFÍA -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>✏️ Tipografía</h3>
-                    <div class="style-control">
-                        <label>Tamaño Títulos: <span id="titleSizeValue">${this.styles.texts.titleSize}rem</span></label>
-                        <input type="range" id="titleSize" min="1.5" max="4" step="0.25" value="${this.styles.texts.titleSize}">
-                    </div>
-                    <div class="style-control">
-                        <label>Tamaño Texto: <span id="bodySizeValue">${this.styles.texts.bodySize}rem</span></label>
-                        <input type="range" id="bodySize" min="0.8" max="1.5" step="0.1" value="${this.styles.texts.bodySize}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Tamaño Títulos: <span id="titleSizeValue">${this.styles.texts.titleSize}rem</span></label>
+                    <input type="range" id="titleSize" min="1.5" max="4" step="0.25" value="${this.styles.texts.titleSize}">
+                </div>
+                <div class="control-group">
+                    <label>Tamaño Texto: <span id="bodySizeValue">${this.styles.texts.bodySize}rem</span></label>
+                    <input type="range" id="bodySize" min="0.8" max="1.5" step="0.1" value="${this.styles.texts.bodySize}">
                 </div>
 
                 <!-- ANIMACIONES -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>⚡ Animaciones</h3>
-                    <div class="style-control">
-                        <label>Velocidad: <span id="transitionSpeedValue">${this.styles.animations.transitionSpeed}s</span></label>
-                        <input type="range" id="transitionSpeed" min="0.1" max="1" step="0.1" value="${this.styles.animations.transitionSpeed}">
-                    </div>
-                    <div class="style-control">
-                        <label>Elevación Hover: <span id="hoverLiftValue">${this.styles.animations.hoverLift}px</span></label>
-                        <input type="range" id="hoverLift" min="0" max="20" value="${this.styles.animations.hoverLift}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Velocidad: <span id="transitionSpeedValue">${this.styles.animations.transitionSpeed}s</span></label>
+                    <input type="range" id="transitionSpeed" min="0.1" max="1" step="0.1" value="${this.styles.animations.transitionSpeed}">
+                </div>
+                <div class="control-group">
+                    <label>Elevación Hover: <span id="hoverLiftValue">${this.styles.animations.hoverLift}px</span></label>
+                    <input type="range" id="hoverLift" min="0" max="20" value="${this.styles.animations.hoverLift}">
                 </div>
 
                 <!-- EFECTOS -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>✨ Efectos</h3>
-                    <div class="style-control">
-                        <label>Intensidad Glow: <span id="glowIntensityValue">${Math.round(this.styles.effects.glowIntensity * 100)}%</span></label>
-                        <input type="range" id="glowIntensity" min="0" max="100" value="${this.styles.effects.glowIntensity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Opacidad Bordes: <span id="borderOpacityValue">${Math.round(this.styles.effects.borderOpacity * 100)}%</span></label>
-                        <input type="range" id="borderOpacity" min="0" max="30" value="${this.styles.effects.borderOpacity * 100}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Intensidad Glow: <span id="glowIntensityValue">${Math.round(this.styles.effects.glowIntensity * 100)}%</span></label>
+                    <input type="range" id="glowIntensity" min="0" max="100" value="${this.styles.effects.glowIntensity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Opacidad Bordes: <span id="borderOpacityValue">${Math.round(this.styles.effects.borderOpacity * 100)}%</span></label>
+                    <input type="range" id="borderOpacity" min="0" max="30" value="${this.styles.effects.borderOpacity * 100}">
                 </div>
 
                 <!-- GENERAL -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>🌐 General</h3>
-                    <div class="style-control">
-                        <label>Opacidad Red: <span id="networkOpacityValue">${Math.round(this.styles.general.networkOpacity * 100)}%</span></label>
-                        <input type="range" id="networkOpacity" min="0" max="100" value="${this.styles.general.networkOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Blur Navbar: <span id="navbarBlurValue">${this.styles.general.navbarBlur}px</span></label>
-                        <input type="range" id="navbarBlur" min="0" max="40" value="${this.styles.general.navbarBlur}">
-                    </div>
-                    <div class="style-control">
-                        <label>Opacidad Navbar: <span id="navbarOpacityValue">${Math.round(this.styles.general.navbarOpacity * 100)}%</span></label>
-                        <input type="range" id="navbarOpacity" min="0" max="100" value="${this.styles.general.navbarOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Ancho Contenedor: <span id="containerWidthValue">${this.styles.general.containerWidth}px</span></label>
-                        <input type="range" id="containerWidth" min="800" max="1600" step="50" value="${this.styles.general.containerWidth}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Opacidad Red: <span id="networkOpacityValue">${Math.round(this.styles.general.networkOpacity * 100)}%</span></label>
+                    <input type="range" id="networkOpacity" min="0" max="100" value="${this.styles.general.networkOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Blur Navbar: <span id="navbarBlurValue">${this.styles.general.navbarBlur}px</span></label>
+                    <input type="range" id="navbarBlur" min="0" max="40" value="${this.styles.general.navbarBlur}">
+                </div>
+                <div class="control-group">
+                    <label>Opacidad Navbar: <span id="navbarOpacityValue">${Math.round(this.styles.general.navbarOpacity * 100)}%</span></label>
+                    <input type="range" id="navbarOpacity" min="0" max="100" value="${this.styles.general.navbarOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Ancho Contenedor: <span id="containerWidthValue">${this.styles.general.containerWidth}px</span></label>
+                    <input type="range" id="containerWidth" min="800" max="1600" step="50" value="${this.styles.general.containerWidth}">
                 </div>
 
                 <!-- ACCIONES -->
-                <div class="style-actions">
+                <div class="panel-actions">
                     <button id="saveStylesBtn" class="save-btn">💾 Guardar</button>
                     <button id="resetStylesBtn" class="reset-btn">Restablecer</button>
                 </div>
@@ -275,38 +282,23 @@ class StyleEditor {
 
         document.body.appendChild(this.panel);
 
-        // Botón para abrir el panel
-        this.createToggleButton();
+        // Se ha eliminado createToggleButton ya que se maneja desde el Dock
         this.setupEvents();
-    }
-
-    // ============================================
-    // MÉTODO: createToggleButton
-    // ============================================
-    createToggleButton() {
-        const btn = document.createElement('button');
-        btn.id = 'styleEditorBtn';
-        btn.className = 'style-editor-button';
-        btn.innerHTML = '🎨 <span>Estilos</span>';
-        document.body.appendChild(btn);
-
-        btn.addEventListener('click', () => {
-            this.panel.classList.add('active');
-            btn.style.opacity = '0';
-            btn.style.pointerEvents = 'none';
-        });
     }
 
     // ============================================
     // MÉTODO: setupEvents
     // ============================================
     setupEvents() {
-        // Cerrar panel
+        // Cerrar panel - Actualiza también el botón del Dock
         document.getElementById('closeStylePanel').addEventListener('click', () => {
             this.panel.classList.remove('active');
-            const btn = document.getElementById('styleEditorBtn');
-            btn.style.opacity = '1';
-            btn.style.pointerEvents = 'auto';
+            // Quitar clase active del botón del dock si existe
+            const dockBtn = document.getElementById('dockStyleBtn');
+            if (dockBtn) dockBtn.classList.remove('active');
+
+            // Actualizar estado en el orquestador del dock si fuera accesible globalmente
+            // Pero como es local en index.html, esto es una sincronización visual básica
         });
 
         // ---- TARJETAS ----

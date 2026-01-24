@@ -4,7 +4,7 @@
  * ============================================
  * Sistema de animación de malla/red interactiva
  * que responde al movimiento del mouse.
- * 
+ *
  * Características:
  * - Red de nodos conectados en forma de cuadrícula
  * - Efectos de interacción: repeler, atraer, onda, iluminar
@@ -310,26 +310,10 @@ class NetworkMesh {
     // Configura el panel de edición y sus controles
     setupControls() {
         // ---- REFERENCIAS A ELEMENTOS DEL DOM ----
-        const editBtn = document.getElementById('editBtn');       // #editBtn - Botón "Editar Red"
-        const editPanel = document.getElementById('editPanel');   // #editPanel - Panel de configuración
-        const closePanel = document.getElementById('closePanel'); // #closePanel - Botón X para cerrar
         const resetBtn = document.getElementById('resetBtn');     // #resetBtn - Botón "Restablecer"
 
-        // ---- ABRIR PANEL ----
-        // Al hacer clic en "Editar Red", muestra el panel
-        editBtn.addEventListener('click', () => {
-            editPanel.classList.add('active');    // Muestra el panel
-            editBtn.style.opacity = '0';          // Oculta el botón
-            editBtn.style.pointerEvents = 'none'; // Desactiva clics en el botón
-        });
-
-        // ---- CERRAR PANEL ----
-        // Al hacer clic en X, oculta el panel
-        closePanel.addEventListener('click', () => {
-            editPanel.classList.remove('active'); // Oculta el panel
-            editBtn.style.opacity = '1';          // Muestra el botón
-            editBtn.style.pointerEvents = 'auto'; // Reactiva clics
-        });
+        // Nota: La apertura/cierre del panel ahora se maneja
+        // centralizadamente desde la lógica del Dock en index.html
 
         // ---- CONTROL: interactionType (Tipo de interacción) ----
         // <select> para cambiar cómo responde la red al mouse
