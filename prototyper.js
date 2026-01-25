@@ -31,28 +31,111 @@ class Prototyper {
     // SETUP: Dock & UI
     // ============================================
     setupDock() {
-        const dockContainer = document.querySelector('.dock');
-        if (!dockContainer) return;
+        let dockContainer = document.querySelector('.dock');
 
-        // 1. Añadir separador visual
+        // Si no existe, lo creamos (para limpiar index.html)
+        if (!dockContainer) {
+            const container = document.createElement('div');
+            container.className = 'dock-container';
+            dockContainer = document.createElement('div');
+            dockContainer.className = 'dock';
+            container.appendChild(dockContainer);
+            document.body.appendChild(container);
+        } else {
+            // Limpiar botones hardcoded existentes si los hay
+            dockContainer.innerHTML = '';
+        }
+
+        this.dock = dockContainer;
+
+        // El botón de Toggle Mode siempre va al final o separado
+        // Lo añadiremos dinámicamente o reservaremos el espacio
+    }
+
+    /**
+     * API para que otros módulos añadan botones al Dock
+     * @param {Object} config - { id, icon, tooltip, onClick, isToggle }
+     */
+    addDockButton(config) {
+        if (!this.dock) return;
+
+        const btn = document.createElement('button');
+        btn.className = 'dock-btn';
+        if (config.id) btn.id = config.id;
+        if (config.isToggle) btn.className += ' mode-toggle';
+
+        btn.title = config.tooltip || '';
+        btn.innerHTML = `
+            ${config.icon}
+            ${config.tooltip ? `<span class="dock-tooltip">${config.tooltip}</span>` : ''}
+        `;
+
+        if (config.onClick) {
+            btn.addEventListener('click', (e) => {
+                // Si no es el toggle de modo, gestionar estado activo
+                if (!config.isToggle) {
+                   this.handleDockButtonClick(btn);
+                }
+                config.onClick(e);
+            });
+        }
+
+        // Insertar antes del separador si existe, para mantener el toggle al final
+        const sep = this.dock.querySelector('.dock-separator');
+        if (sep) {
+            this.dock.insertBefore(btn, sep);
+        } else {
+            this.dock.appendChild(btn);
+        }
+
+        return btn;
+    }
+
+    handleDockButtonClick(clickedBtn) {
+        const isActive = clickedBtn.classList.contains('active');
+
+        // Cerrar todos otros botones
+        this.dock.querySelectorAll('.dock-btn').forEach(b => {
+             if (!b.classList.contains('mode-toggle')) b.classList.remove('active');
+        });
+
+        if (!isActive) {
+            clickedBtn.classList.add('active');
+        }
+    }
+
+    addSeparator() {
+        if (!this.dock) return;
         const sep = document.createElement('div');
         sep.className = 'dock-separator';
-        dockContainer.appendChild(sep);
+        this.dock.appendChild(sep);
+    }
 
-        // 2. Botón de Modo Juego/Diseño
-        const toggleBtn = document.createElement('button');
-        toggleBtn.className = 'dock-btn mode-toggle';
-        toggleBtn.id = 'toggleModeBtn';
-        toggleBtn.title = 'Alternar Diseño/Juego';
-        toggleBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-        `;
-        toggleBtn.addEventListener('click', () => this.toggleMode());
-        dockContainer.appendChild(toggleBtn);
+    addModeToggle() {
+        this.addSeparator();
+        // Llamamos directamente a appendChild para saltarnos la lógica de "insertar antes del separador"
+        // ya que este ES el botón final
+        const btn = document.createElement('button');
+        btn.className = 'dock-btn mode-toggle';
+        btn.id = 'toggleModeBtn';
+        btn.title = 'Play Mode';
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+        btn.addEventListener('click', () => this.toggleMode());
+        this.dock.appendChild(btn);
+    }
 
-        // Añadiremos más botones (Inspector, Palette) en los siguientes pasos
+    /**
+     * Cierra cualquier panel flotante abierto
+     */
+    closeAllPanels() {
+        // Disparar evento para que todos los módulos se cierren
+        window.dispatchEvent(new CustomEvent('proto-ui-close-all'));
+
+        // Limpieza de seguridad por si algún módulo no escucha
+        document.querySelectorAll('.floating-module.active').forEach(p => p.classList.remove('active'));
+        if (this.dock) {
+             this.dock.querySelectorAll('.dock-btn.active').forEach(b => b.classList.remove('active'));
+        }
     }
 
     // ============================================
@@ -244,8 +327,7 @@ class Prototyper {
 
 // Inicialización global
 document.addEventListener('DOMContentLoaded', () => {
-    // Retrasar ligeramente para asegurar que el DOM y Dock existan
-    setTimeout(() => {
-        globalThis.prototyper = new Prototyper();
-    }, 100);
+    globalThis.prototyper = new Prototyper();
+    // Añadir el toggle al final de la inicialización
+    globalThis.prototyper.addModeToggle();
 });

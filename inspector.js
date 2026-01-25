@@ -194,26 +194,13 @@ class Inspector {
     }
 
     setupDockButton() {
-        const dock = document.querySelector('.dock');
-        const btn = document.createElement('button');
-        btn.className = 'dock-btn';
-        btn.id = 'dockInspectorBtn';
-        btn.title = 'Inspector';
-        btn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <span class="dock-tooltip">Inspector</span>
-        `;
+        if (!globalThis.prototyper) return;
 
-        // Insert before mode toggle if possible
-        const toggle = dock.querySelector('.mode-toggle');
-        if (toggle) {
-            dock.insertBefore(btn, toggle);
-        } else {
-            dock.appendChild(btn);
-        }
-
-        btn.addEventListener('click', () => {
-            this.togglePanel();
+        globalThis.prototyper.addDockButton({
+            id: 'dockInspectorBtn',
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
+            tooltip: 'Inspector',
+            onClick: () => this.togglePanel()
         });
 
         // Close button logic
@@ -226,9 +213,7 @@ class Inspector {
     // LOGIC: State Management
     // ============================================
     togglePanel() {
-        const btn = document.getElementById('dockInspectorBtn');
         const isActive = this.panel.classList.contains('active');
-
         if (isActive) {
             this.closePanel();
         } else {
@@ -237,27 +222,27 @@ class Inspector {
     }
 
     openPanel() {
-        // Cerrar otros paneles (simple hack, idealmente centralizado)
-        document.querySelectorAll('.floating-module.active').forEach(p => {
-            if (p !== this.panel) p.classList.remove('active');
-        });
-        document.querySelectorAll('.dock-btn.active').forEach(b => {
-             if (!b.classList.contains('mode-toggle')) b.classList.remove('active');
-        });
-
+        globalThis.prototyper.closeAllPanels();
         this.panel.classList.add('active');
-        document.getElementById('dockInspectorBtn').classList.add('active');
+        const btn = document.getElementById('dockInspectorBtn');
+        if (btn) btn.classList.add('active');
     }
 
     closePanel() {
         this.panel.classList.remove('active');
-        document.getElementById('dockInspectorBtn').classList.remove('active');
+        const btn = document.getElementById('dockInspectorBtn');
+        if (btn) btn.classList.remove('active');
     }
 
     // ============================================
     // EVENTS: Listeners
     // ============================================
     setupEvents() {
+        // Global Close Event
+        window.addEventListener('proto-ui-close-all', () => {
+            this.closePanel();
+        });
+
         // 1. Selection Events
         window.addEventListener('proto-element-selected', (e) => {
             this.onSelect(e.detail);

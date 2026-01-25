@@ -284,21 +284,45 @@ class StyleEditor {
 
         // Se ha eliminado createToggleButton ya que se maneja desde el Dock
         this.setupEvents();
+        this.setupDockButton();
+    }
+
+    setupDockButton() {
+        if (!globalThis.prototyper) return;
+
+        globalThis.prototyper.addDockButton({
+            id: 'dockStyleBtn',
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>`,
+            tooltip: 'Estilos Globales',
+            onClick: () => this.togglePanel()
+        });
+    }
+
+    togglePanel() {
+        const isActive = this.panel.classList.contains('active');
+        if (isActive) {
+            this.panel.classList.remove('active');
+        } else {
+            globalThis.prototyper.closeAllPanels();
+            this.panel.classList.add('active');
+            const btn = document.getElementById('dockStyleBtn');
+            if (btn) btn.classList.add('active');
+        }
     }
 
     // ============================================
     // MÉTODO: setupEvents
     // ============================================
     setupEvents() {
-        // Cerrar panel - Actualiza también el botón del Dock
-        document.getElementById('closeStylePanel').addEventListener('click', () => {
-            this.panel.classList.remove('active');
-            // Quitar clase active del botón del dock si existe
-            const dockBtn = document.getElementById('dockStyleBtn');
-            if (dockBtn) dockBtn.classList.remove('active');
+        window.addEventListener('proto-ui-close-all', () => {
+            if (this.panel.classList.contains('active')) {
+                this.togglePanel();
+            }
+        });
 
-            // Actualizar estado en el orquestador del dock si fuera accesible globalmente
-            // Pero como es local en index.html, esto es una sincronización visual básica
+        // Cerrar panel
+        document.getElementById('closeStylePanel').addEventListener('click', () => {
+            this.togglePanel();
         });
 
         // ---- TARJETAS ----

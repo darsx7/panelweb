@@ -104,21 +104,13 @@ class Palette {
     }
 
     setupDockButton() {
-        const dock = document.querySelector('.dock');
-        const btn = document.createElement('button');
-        btn.className = 'dock-btn';
-        btn.id = 'dockPaletteBtn';
-        btn.title = 'Componentes';
-        btn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span class="dock-tooltip">Componentes</span>
-        `;
+        if (!globalThis.prototyper) return;
 
-        // Insert as first button
-        dock.insertBefore(btn, dock.firstChild);
-
-        btn.addEventListener('click', () => {
-            this.togglePanel();
+        globalThis.prototyper.addDockButton({
+            id: 'dockPaletteBtn',
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`,
+            tooltip: 'Componentes',
+            onClick: () => this.togglePanel()
         });
 
         this.panel.querySelector('#closePalette').addEventListener('click', () => {
@@ -127,9 +119,7 @@ class Palette {
     }
 
     togglePanel() {
-        const btn = document.getElementById('dockPaletteBtn');
         const isActive = this.panel.classList.contains('active');
-
         if (isActive) {
             this.closePanel();
         } else {
@@ -138,21 +128,16 @@ class Palette {
     }
 
     openPanel() {
-        // Cerrar otros (centralizar esto sería ideal)
-        document.querySelectorAll('.floating-module.active').forEach(p => {
-            if (p !== this.panel) p.classList.remove('active');
-        });
-        document.querySelectorAll('.dock-btn.active').forEach(b => {
-             if (!b.classList.contains('mode-toggle')) b.classList.remove('active');
-        });
-
+        globalThis.prototyper.closeAllPanels();
         this.panel.classList.add('active');
-        document.getElementById('dockPaletteBtn').classList.add('active');
+        const btn = document.getElementById('dockPaletteBtn');
+        if (btn) btn.classList.add('active');
     }
 
     closePanel() {
         this.panel.classList.remove('active');
-        document.getElementById('dockPaletteBtn').classList.remove('active');
+        const btn = document.getElementById('dockPaletteBtn');
+        if (btn) btn.classList.remove('active');
     }
 
     // ============================================
@@ -242,7 +227,5 @@ class Palette {
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        globalThis.palette = new Palette();
-    }, 300);
+    globalThis.palette = new Palette();
 });

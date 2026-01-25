@@ -180,14 +180,30 @@ class ContentEditor {
 
         document.body.appendChild(this.toolbar);
         this.setupToolbarEvents();
+        this.setupDockButton();
+    }
+
+    setupDockButton() {
+        if (!globalThis.prototyper) return;
+
+        globalThis.prototyper.addDockButton({
+            id: 'dockContentBtn',
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>`,
+            tooltip: 'Editar Contenido',
+            onClick: () => this.toggleEditMode()
+        });
     }
 
     // ============================================
     // MÉTODO: setupToolbarEvents
     // ============================================
     setupToolbarEvents() {
-        // El botón de toggle ahora se maneja externamente (desde el Dock)
-        // document.getElementById('toggleEditMode').addEventListener('click', () => this.toggleEditMode());
+        // Escuchar evento global de cierre
+        window.addEventListener('proto-ui-close-all', () => {
+            if (this.isEditMode) {
+                this.toggleEditMode();
+            }
+        });
 
         document.getElementById('saveContentBtn').addEventListener('click', async () => {
             const btn = document.getElementById('saveContentBtn');
@@ -228,11 +244,25 @@ class ContentEditor {
     // MÉTODO: toggleEditMode
     // ============================================
     toggleEditMode() {
+        const wasActive = this.isEditMode;
+
+        // Si vamos a activar, cerramos otros primero
+        if (!wasActive) {
+            globalThis.prototyper.closeAllPanels();
+        }
+
         this.isEditMode = !this.isEditMode;
 
         // Mostrar/Ocultar panel de acciones
         if (this.toolbar) {
             this.toolbar.style.display = this.isEditMode ? 'flex' : 'none';
+        }
+
+        // Actualizar botón del dock
+        const dockBtn = document.getElementById('dockContentBtn');
+        if (dockBtn) {
+            if (this.isEditMode) dockBtn.classList.add('active');
+            else dockBtn.classList.remove('active');
         }
 
         if (this.isEditMode) {
