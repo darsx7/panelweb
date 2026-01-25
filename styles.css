@@ -7,38 +7,24 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* padding incluido en el ancho */
 }
 
-/* Variables CSS: colores y valores reutilizables
-   Se pueden modificar desde JavaScript */
+/* Variables CSS */
 :root {
     --primary: #f59e0b;
-    /* Color principal - dorado */
     --primary-hover: #d97706;
-    /* Hover del primario */
     --primary-glow: rgba(245, 158, 11, 0.4);
-    /* Brillo primario */
     --secondary: #fbbf24;
-    /* Color secundario - amarillo */
     --bg-dark: #0a0a0f;
-    /* Fondo principal oscuro */
     --bg-section: rgba(15, 15, 25, 0.7);
-    /* Fondo secciones */
-    --bg-panel: rgba(15, 15, 25, 0.9);
-    /* Fondo panel edición */
+    --bg-panel: rgba(15, 15, 25, 0.95); /* Más opaco para mejor legibilidad */
     --text-primary: #f1f5f9;
-    /* Texto principal claro */
     --text-secondary: #94a3b8;
-    /* Texto secundario gris */
     --border: rgba(255, 255, 255, 0.08);
-    /* Borde sutil */
     --border-hover: rgba(245, 158, 11, 0.5);
-    /* Borde hover */
     --glow-color: rgba(251, 191, 36, 0.6);
-    /* Color resplandor */
 
-    /* Variables dinámicas (editables desde style-editor.js) */
+    /* Variables dinámicas */
     --card-bg-opacity: 0.03;
     --card-border-radius: 20px;
     --card-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
@@ -54,36 +40,27 @@
     --navbar-blur: 20px;
     --navbar-opacity: 0.8;
     --container-width: 1200px;
-
-    /* Tipografía */
     --title-size: 2.5rem;
     --body-size: 1rem;
-
-    /* Animaciones */
     --transition-speed: 0.3s;
     --hover-lift: 8px;
-
-    /* Efectos */
     --glow-intensity: 0.25;
     --border-opacity: 0.08;
 }
 
-/* Scroll suave para navegación interna */
 html {
     scroll-behavior: smooth;
 }
 
-/* Estilos base del body */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg-dark);
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
-    /* Evita scroll horizontal */
 }
 
-/* Canvas de animación de red - fondo fijo */
+/* Canvas */
 #networkCanvas {
     position: fixed;
     top: 0;
@@ -92,10 +69,8 @@ body {
     height: 100%;
     z-index: 1;
     pointer-events: none;
-    /* No bloquea clics */
 }
 
-/* Texto con gradiente dorado */
 .gradient-text {
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     -webkit-background-clip: text;
@@ -114,9 +89,10 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 1rem 3rem;
-    background: rgba(10, 10, 15, 0.8);
-    backdrop-filter: blur(20px);
+    background: rgba(10, 10, 15, var(--navbar-opacity));
+    backdrop-filter: blur(var(--navbar-blur));
     border-bottom: 1px solid var(--border);
+    transition: all 0.3s ease;
 }
 
 .nav-brand {
@@ -125,9 +101,7 @@ body {
     gap: 0.5rem;
 }
 
-.brand-icon {
-    font-size: 1.5rem;
-}
+.brand-icon { font-size: 1.5rem; }
 
 .brand-text {
     font-size: 1.3rem;
@@ -170,9 +144,7 @@ body {
     text-shadow: 0 0 20px var(--glow-color);
 }
 
-.nav-link:hover::after {
-    width: 100%;
-}
+.nav-link:hover::after { width: 100%; }
 
 .nav-cta {
     padding: 0.7rem 1.5rem;
@@ -192,7 +164,7 @@ body {
     box-shadow: 0 10px 30px var(--primary-glow);
 }
 
-/* Hero Section */
+/* Hero */
 .hero {
     position: relative;
     z-index: 2;
@@ -209,7 +181,7 @@ body {
 }
 
 .hero-title {
-    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    font-size: clamp(2.5rem, 7vw, var(--title-size));
     font-weight: 700;
     line-height: 1.1;
     margin-bottom: 1.5rem;
@@ -234,12 +206,12 @@ body {
 
 .btn {
     padding: 1rem 2rem;
-    border-radius: 12px;
+    border-radius: var(--btn-border-radius);
     font-family: inherit;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
@@ -251,7 +223,7 @@ body {
 }
 
 .btn-primary:hover {
-    transform: translateY(-3px);
+    transform: translateY(-3px) scale(var(--btn-hover-scale));
     box-shadow: 0 15px 40px var(--primary-glow);
 }
 
@@ -274,9 +246,7 @@ body {
     animation: fadeInUp 1s ease-out 0.6s both;
 }
 
-.stat-item {
-    text-align: center;
-}
+.stat-item { text-align: center; }
 
 .stat-number {
     display: block;
@@ -294,83 +264,75 @@ body {
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Sections */
 section {
     position: relative;
     z-index: 2;
-    padding: 6rem 3rem;
+    padding: var(--section-padding) 3rem;
 }
 
 .section-title {
-    font-size: 2.5rem;
+    font-size: var(--title-size);
     font-weight: 700;
     text-align: center;
     margin-bottom: 3rem;
 }
 
-/* Services */
-.services {
-    background: var(--bg-section);
-    backdrop-filter: blur(10px);
-}
+.services { background: rgba(15, 15, 25, var(--services-opacity)); backdrop-filter: blur(10px); }
+.benefits { background: rgba(15, 15, 25, var(--benefits-opacity)); }
+.contact { background: rgba(15, 15, 25, var(--contact-opacity)); backdrop-filter: blur(10px); }
 
-.services-grid {
+.services-grid, .benefits-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
+    gap: var(--card-gap);
+    max-width: var(--container-width);
     margin: 0 auto;
 }
 
-.service-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2.5rem;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.service-card, .benefit-item {
+    background: rgba(255, 255, 255, var(--card-bg-opacity));
+    border: 1px solid rgba(255, 255, 255, var(--border-opacity));
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
 
-.service-card:hover {
+.service-card:hover, .benefit-item:hover {
     border-color: var(--primary);
     background: rgba(245, 158, 11, 0.12);
-    transform: translateY(-8px);
-    box-shadow: 0 0 40px rgba(245, 158, 11, 0.25), 0 20px 60px rgba(245, 158, 11, 0.15), inset 0 0 60px rgba(251, 191, 36, 0.08);
+    transform: translateY(calc(var(--hover-lift) * -1)) scale(var(--card-hover-scale));
+    box-shadow: 0 0 40px rgba(245, 158, 11, var(--glow-intensity)), 0 20px 60px rgba(245, 158, 11, 0.15);
 }
 
-.card-icon {
+.card-icon, .benefit-icon {
     font-size: 3rem;
     margin-bottom: 1.5rem;
     display: block;
 }
 
-.service-card h3 {
+.service-card h3, .benefit-item h4 {
     font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 1rem;
     transition: text-shadow 0.3s ease;
 }
 
-.service-card:hover h3 {
+.service-card:hover h3, .benefit-item:hover h4 {
     text-shadow: 0 0 20px var(--glow-color);
 }
 
-.service-card p {
+.service-card p, .benefit-item p {
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
     line-height: 1.7;
+    font-size: var(--body-size);
 }
 
 .card-link {
@@ -380,65 +342,9 @@ section {
     transition: all 0.3s ease;
 }
 
-.card-link:hover {
-    text-shadow: 0 0 15px var(--glow-color);
-}
+.card-link:hover { text-shadow: 0 0 15px var(--glow-color); }
 
-/* Benefits */
-.benefits-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.benefit-item {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.benefit-item:hover {
-    border-color: var(--primary);
-    background: rgba(245, 158, 11, 0.10);
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 0 30px rgba(245, 158, 11, 0.2), 0 15px 40px rgba(245, 158, 11, 0.12), inset 0 0 40px rgba(251, 191, 36, 0.06);
-}
-
-.benefit-icon {
-    font-size: 2.5rem;
-    display: block;
-    margin-bottom: 1rem;
-}
-
-.benefit-item h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    transition: text-shadow 0.3s ease;
-}
-
-.benefit-item:hover h4 {
-    text-shadow: 0 0 15px var(--glow-color);
-}
-
-.benefit-item p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-/* Contact */
-.contact {
-    background: var(--bg-section);
-    backdrop-filter: blur(10px);
-}
-
+/* Contact Form */
 .contact-content {
     max-width: 700px;
     margin: 0 auto;
@@ -447,7 +353,7 @@ section {
 
 .contact-text {
     color: var(--text-secondary);
-    font-size: 1.1rem;
+    font-size: var(--body-size);
     margin-bottom: 2.5rem;
 }
 
@@ -473,46 +379,13 @@ section {
     font-family: inherit;
     font-size: 1rem;
     transition: all 0.3s ease;
-    position: relative;
 }
 
-.form-input:hover {
-    border-color: var(--border-hover);
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
-}
+.form-input:hover { border-color: var(--border-hover); box-shadow: 0 0 20px rgba(245, 158, 11, 0.1); }
+.form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+.form-textarea { min-height: 120px; resize: vertical; }
 
-.form-input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 30px var(--primary-glow), inset 0 0 10px rgba(245, 158, 11, 0.05);
-}
-
-.form-input::placeholder {
-    color: var(--text-secondary);
-}
-
-.form-textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
-select.form-input {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-}
-
-select.form-input option {
-    background: var(--bg-dark);
-    color: var(--text-primary);
-}
-
-.btn-full {
-    width: 100%;
-    margin-top: 0.5rem;
-}
+.btn-full { width: 100%; margin-top: 0.5rem; }
 
 /* Footer */
 .footer {
@@ -532,84 +405,116 @@ select.form-input option {
     margin: 0 auto;
 }
 
-.footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+/* ============================================
+   DOCK LATERAL & FLOATING MODULES
+   ============================================ */
 
-.footer-text {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-/* Edit Button */
-.edit-button {
+/* Contenedor del Dock (derecha, vertical) */
+.dock-container {
     position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    z-index: 100;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    z-index: 1000;
+}
+
+.dock {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    background: var(--bg-panel);
+    flex-direction: column;
+    gap: 15px;
+    background: rgba(15, 15, 25, 0.8);
+    backdrop-filter: blur(15px);
     border: 1px solid var(--border);
+    padding: 15px 10px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.dock-btn {
+    width: 50px;
+    height: 50px;
     border-radius: 12px;
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 500;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
     cursor: pointer;
-    backdrop-filter: blur(20px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
-.edit-button:hover {
+.dock-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.dock-btn.active {
     background: rgba(245, 158, 11, 0.15);
+    color: var(--primary);
     border-color: var(--primary);
-    box-shadow: 0 0 30px var(--primary-glow);
-    transform: translateY(-2px);
+    box-shadow: 0 0 15px var(--primary-glow);
 }
 
-.edit-button svg {
-    transition: transform 0.3s ease;
+/* Tooltips */
+.dock-tooltip {
+    position: absolute;
+    right: 120%;
+    top: 50%;
+    transform: translateY(-50%) translateX(10px);
+    background: var(--bg-panel);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border: 1px solid var(--border);
 }
 
-.edit-button:hover svg {
-    transform: rotate(-15deg);
+.dock-btn:hover .dock-tooltip {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
 }
 
-/* Edit Panel */
-.edit-panel {
+/* Módulos Flotantes (Paneles) */
+.floating-module {
     position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    z-index: 99;
-    width: 300px;
+    top: 50%;
+    right: 90px; /* A la izquierda del dock */
+    transform: translateY(-50%) translateX(20px);
+    width: 320px;
+    max-height: 80vh;
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 16px;
     backdrop-filter: blur(20px);
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-    transform: translateY(calc(100% + 2rem));
     opacity: 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     overflow: hidden;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
 }
 
-.edit-panel.active {
-    transform: translateY(0);
+.floating-module.active {
+    transform: translateY(-50%) translateX(0);
     opacity: 1;
+    pointer-events: auto;
 }
 
+/* Cabecera del panel */
 .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
 }
 
 .panel-header h2 {
@@ -622,705 +527,154 @@ select.form-input option {
 }
 
 .close-btn {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: none;
+    border: none;
     color: var(--text-secondary);
     font-size: 1.5rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    line-height: 1;
+    transition: color 0.2s;
 }
 
-.close-btn:hover {
-    background: rgba(239, 68, 68, 0.15);
-    border-color: #ef4444;
-    color: #ef4444;
-}
+.close-btn:hover { color: #ef4444; }
 
+/* Contenido del panel */
 .panel-content {
     padding: 1.5rem;
+    overflow-y: auto;
 }
 
-.control-group {
-    margin-bottom: 1.25rem;
-}
-
-.control-group:last-of-type {
-    margin-bottom: 1rem;
-}
-
+/* Controles */
+.control-group { margin-bottom: 1.25rem; }
 .control-group label {
     display: block;
     font-size: 0.85rem;
-    font-weight: 500;
     color: var(--text-secondary);
     margin-bottom: 0.5rem;
 }
+.control-group label span { color: var(--primary); }
 
-.control-group label span {
-    color: var(--primary);
-    font-weight: 600;
-}
-
-select {
+select, input[type="text"], input[type="number"] {
     width: 100%;
-    padding: 0.7rem 1rem;
+    padding: 0.7rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     color: var(--text-primary);
-    font-family: inherit;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-}
-
-select:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-glow);
 }
-
-select option {
-    background: var(--bg-dark);
-}
+select:focus { border-color: var(--primary); }
 
 input[type="range"] {
     width: 100%;
     height: 6px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.1);
     border-radius: 3px;
     appearance: none;
     cursor: pointer;
 }
-
 input[type="range"]::-webkit-slider-thumb {
     appearance: none;
     width: 18px;
     height: 18px;
-    background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+    background: var(--primary);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 2px 10px var(--primary-glow);
-    transition: transform 0.2s ease;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
+    box-shadow: 0 0 10px var(--primary-glow);
 }
 
 input[type="color"] {
     width: 100%;
     height: 40px;
-    padding: 4px;
-    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;
-}
-
-input[type="color"]::-webkit-color-swatch {
-    border: none;
-    border-radius: 6px;
-}
-
-.reset-btn {
-    width: 100%;
-    padding: 0.75rem;
+    border-radius: 8px;
     background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text-secondary);
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-.reset-btn:hover {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: #ef4444;
-    color: #ef4444;
-}
-
-/* Contenedor de botones de acción del panel */
+/* Panel Actions */
 .panel-actions {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    /* Espacio entre botones */
+    margin-top: 1rem;
 }
+.btn-row { display: flex; gap: 0.5rem; }
 
-/* Botón Guardar - color verde para indicar acción positiva */
-.save-btn {
-    width: 100%;
-    padding: 0.75rem;
-    /* Fondo verde semi-transparente */
-    background: rgba(34, 197, 94, 0.15);
-    border: 1px solid rgba(34, 197, 94, 0.5);
-    border-radius: 10px;
-    /* Texto verde claro */
-    color: #4ade80;
-    font-family: inherit;
-    font-size: 0.9rem;
+.save-btn, .export-btn, .import-btn, .reset-btn {
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    /* Flexbox para alinear ícono y texto */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    transition: all 0.3s;
+    font-family: inherit;
+    font-size: 0.9rem;
+    text-align: center;
 }
 
-/* Hover del botón guardar - más brillante */
+.save-btn {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.5);
+    color: #4ade80;
+}
 .save-btn:hover {
     background: rgba(34, 197, 94, 0.25);
-    border-color: #22c55e;
-    color: #22c55e;
-    /* Sombra verde brillante */
     box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
 }
 
-/* Estado "guardado" temporal - feedback visual */
-.save-btn.saved {
-    background: rgba(34, 197, 94, 0.3);
-    border-color: #22c55e;
-    color: #22c55e;
-}
-
-/* Fila de botones (Exportar/Importar lado a lado) */
-.btn-row {
-    display: flex;
-    gap: 0.5rem;
-}
-
-/* Botón Exportar - color azul */
 .export-btn {
     flex: 1;
-    padding: 0.6rem;
     background: rgba(59, 130, 246, 0.15);
-    border: 1px solid rgba(59, 130, 246, 0.5);
-    border-radius: 8px;
+    border-color: rgba(59, 130, 246, 0.5);
     color: #60a5fa;
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
 }
+.export-btn:hover { background: rgba(59, 130, 246, 0.25); }
 
-.export-btn:hover {
-    background: rgba(59, 130, 246, 0.25);
-    border-color: #3b82f6;
-    color: #3b82f6;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
-}
-
-/* Botón Importar - color púrpura */
 .import-btn {
     flex: 1;
-    padding: 0.6rem;
     background: rgba(168, 85, 247, 0.15);
-    border: 1px solid rgba(168, 85, 247, 0.5);
-    border-radius: 8px;
+    border-color: rgba(168, 85, 247, 0.5);
     color: #c084fc;
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
+}
+.import-btn:hover { background: rgba(168, 85, 247, 0.25); }
+
+.reset-btn {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text-secondary);
+}
+.reset-btn:hover { border-color: #ef4444; color: #ef4444; }
+
+/* Content Editor Toolbar (Old styles modified to fit if needed) */
+/* Lo ocultamos porque ahora usamos el Dock button para togglear */
+#contentEditorToolbar {
+    display: none !important; /* Managed by JS/Dock logic mostly */
 }
 
-.import-btn:hover {
-    background: rgba(168, 85, 247, 0.25);
-    border-color: #a855f7;
-    color: #a855f7;
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .navbar {
-        padding: 1rem 1.5rem;
-    }
-
-    .nav-menu {
-        display: none;
-    }
-
-    .hero {
-        padding: 6rem 1.5rem 3rem;
-    }
-
-    .hero-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .hero-stats {
-        gap: 2rem;
-    }
-
-    section {
-        padding: 4rem 1.5rem;
-    }
-
-    .footer-content {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-
-    .edit-button span {
-        display: none;
-    }
-
-    .edit-button {
-        padding: 0.75rem;
-    }
-}
-
-/* ============================================
-   CONTENT EDITOR - Barra de herramientas
-   ============================================ */
-
-/* Toolbar flotante en la esquina inferior izquierda */
-.content-editor-toolbar {
-    position: fixed;
-    bottom: 100px;
-    left: 20px;
-    z-index: 10000;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-}
-
-/* Botones del editor */
-.editor-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.editor-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--border-hover);
-}
-
-.editor-btn .icon {
-    font-size: 1rem;
-}
-
-/* Botón modo edición activo */
-.editor-btn.edit-mode-btn.active {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: #000;
-}
-
-/* Botón guardar */
-.editor-btn.save-btn:hover {
-    background: rgba(34, 197, 94, 0.2);
-    border-color: #22c55e;
-}
-
-/* Botón exportar */
-.editor-btn.export-btn:hover {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: #3b82f6;
-}
-
-/* Botón importar */
-.editor-btn.import-btn:hover {
-    background: rgba(168, 85, 247, 0.2);
-    border-color: #a855f7;
-}
-
-/* Botón cancelar */
-.editor-btn.cancel-btn:hover {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: #ef4444;
-}
-
-/* Contenedor de acciones */
-.editor-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-/* ============================================
-   CONTENT EDITOR - Elementos editables
-   ============================================ */
-
-/* Modo edición activo */
+/* Estilos específicos para la edición inline */
 body.edit-mode [data-content] {
-    outline: 2px dashed transparent;
+    outline: 2px dashed rgba(245, 158, 11, 0.3);
     outline-offset: 4px;
-    transition: all 0.2s ease;
     cursor: text;
 }
-
 body.edit-mode [data-content]:hover {
     outline-color: var(--primary);
     background: rgba(245, 158, 11, 0.05);
 }
-
-body.edit-mode [data-content]:focus {
-    outline-color: var(--primary);
-    outline-style: solid;
-    background: rgba(245, 158, 11, 0.1);
-}
-
-/* Clase cuando está siendo editado */
-[data-content].editable:focus {
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
-}
-
-/* Responsive: toolbar más compacta en móvil */
-@media (max-width: 768px) {
-    .content-editor-toolbar {
-        flex-wrap: wrap;
-        width: 90%;
-        justify-content: center;
-    }
-
-    .editor-btn .text {
-        display: none;
-    }
-
-    .editor-btn {
-        padding: 0.5rem;
-    }
-}
-
-/* ============================================
-   DRAG & DROP - Estilos para reordenar
-   ============================================ */
-
-/* Handle de arrastre - oculto por defecto */
-.drag-handle {
-    display: none;
-    position: absolute;
-    top: 0.5rem;
-    left: 0.5rem;
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-    color: var(--text-secondary);
-    cursor: grab;
-    opacity: 0.6;
-    z-index: 10;
-    user-select: none;
-}
-
-/* Mostrar handle en modo edición */
-body.edit-mode .drag-handle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-body.edit-mode .drag-handle:hover {
-    opacity: 1;
-    color: var(--primary);
-}
-
-/* Tarjetas arrastrables en modo edición */
-body.edit-mode .draggable {
-    position: relative;
-    cursor: grab;
-}
-
-body.edit-mode .draggable:active {
-    cursor: grabbing;
-}
-
-/* Estado mientras se arrastra */
-.dragging {
-    opacity: 0.5;
-    transform: scale(0.98);
-    box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3);
-}
-
-/* Estado cuando se pasa por encima (drop target) */
-.drag-over {
-    border-color: var(--primary) !important;
-    background: rgba(245, 158, 11, 0.15) !important;
-    box-shadow: 0 0 30px var(--primary-glow), inset 0 0 20px rgba(245, 158, 11, 0.1);
-    transform: scale(1.02);
-}
-
-/* Transición suave para todos los estados */
-.service-card,
-.benefit-item,
-.stat-item {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Stats necesitan position relative para el handle */
-.stat-item {
-    position: relative;
-}
-
-/* Handle más pequeño para stats */
-.hero-stats .drag-handle {
-    top: -0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-}
-
-/* ============================================
-   STYLE EDITOR - Panel de Estilos
-   ============================================ */
-
-/* Botón para abrir el panel de estilos */
-.style-editor-button {
+/* Toolbar de acciones de contenido (Guardar/Cancelar) */
+/* Haremos que aparezca como un panel flotante o cerca del dock cuando esté activo */
+.content-actions-panel {
     position: fixed;
-    bottom: 1.5rem;
-    left: 1.5rem;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
+    top: 50%;
+    right: 90px;
+    transform: translateY(-50%);
     background: var(--bg-panel);
-    border: 1px solid var(--border);
+    padding: 1rem;
     border-radius: 12px;
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    backdrop-filter: blur(20px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.style-editor-button:hover {
-    background: rgba(245, 158, 11, 0.15);
-    border-color: var(--primary);
-    box-shadow: 0 0 30px var(--primary-glow);
-    transform: translateY(-2px);
-}
-
-/* Panel de estilos */
-.style-editor-panel {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 1.5rem;
-    z-index: 99;
-    width: 320px;
-    max-height: 70vh;
-    background: var(--bg-panel);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-    transform: translateY(calc(100% + 2rem));
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-}
-
-.style-editor-panel.active {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.style-panel-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-}
-
-.style-panel-header h2 {
-    font-size: 1rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.style-panel-content {
-    padding: 1rem 1.5rem;
-    max-height: calc(70vh - 80px);
-    overflow-y: auto;
-}
-
-.style-section {
-    margin-bottom: 1.25rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-}
-
-.style-section:last-of-type {
-    border-bottom: none;
-}
-
-.style-section h3 {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.75rem;
-}
-
-.style-control {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-}
-
-.style-control label {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-.style-control label span {
-    color: var(--primary);
-    font-weight: 600;
-}
-
-.style-control input[type="range"] {
-    width: 120px;
-}
-
-.style-control input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-.style-actions {
-    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.style-actions .save-btn,
-.style-actions .reset-btn {
-    flex: 1;
-    padding: 0.6rem;
-    font-size: 0.85rem;
-}
-
-/* ============================================
-   APLICAR VARIABLES DINÁMICAS
-   ============================================ */
-
-/* Tarjetas - usar variables dinámicas */
-.service-card,
-.benefit-item {
-    background: rgba(255, 255, 255, var(--card-bg-opacity));
-    border-radius: var(--card-border-radius);
-    padding: var(--card-padding);
-    border: 1px solid rgba(255, 255, 255, var(--border-opacity));
-    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.service-card:hover,
-.benefit-item:hover {
-    transform: translateY(calc(var(--hover-lift) * -1)) scale(var(--card-hover-scale));
-    box-shadow: 0 0 40px rgba(245, 158, 11, var(--glow-intensity));
-}
-
-/* Grids - usar gap variable */
-.services-grid,
-.benefits-grid {
-    gap: var(--card-gap);
-    max-width: var(--container-width);
-}
-
-/* Botones - usar variables dinámicas */
-.btn {
-    border-radius: var(--btn-border-radius);
-    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-primary:hover {
-    transform: translateY(-3px) scale(var(--btn-hover-scale));
-}
-
-/* Secciones - usar variables dinámicas */
-section {
-    padding: var(--section-padding) 3rem;
-}
-
-.services {
-    background: rgba(15, 15, 25, var(--services-opacity));
-}
-
-.benefits {
-    background: rgba(15, 15, 25, var(--benefits-opacity));
-}
-
-.contact {
-    background: rgba(15, 15, 25, var(--contact-opacity));
-}
-
-/* Tipografía - usar variables dinámicas */
-.section-title {
-    font-size: var(--title-size);
-}
-
-.hero-subtitle,
-.service-card p,
-.benefit-item p,
-.contact-text {
-    font-size: var(--body-size);
-}
-
-/* Red animada - usar variable dinámica */
-#networkCanvas {
-    opacity: var(--network-opacity);
-}
-
-/* Navbar - usar variables dinámicas */
-.navbar {
-    backdrop-filter: blur(var(--navbar-blur));
-    background: rgba(10, 10, 15, var(--navbar-opacity));
+    z-index: 999;
 }

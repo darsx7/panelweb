@@ -30,6 +30,10 @@ class StyleEditor {
             const response = await fetch('styles.json');
             if (response.ok) {
                 this.styles = await response.json();
+                // Merge with defaults to ensure structure exists
+                this.styles = { ...this.defaultStyles, ...this.styles,
+                    colors: { ...this.defaultStyles.colors, ...(this.styles.colors || {}) }
+                };
                 this.defaultStyles = structuredClone(this.styles);
                 console.log('✓ Estilos cargados desde styles.json');
             } else {
@@ -47,6 +51,12 @@ class StyleEditor {
     // ============================================
     setDefaults() {
         this.styles = {
+            colors: {
+                primary: '#f59e0b',
+                secondary: '#fbbf24',
+                background: '#0f172a',
+                text: '#f8fafc'
+            },
             cards: {
                 bgOpacity: 0.04,
                 borderRadius: 20,
@@ -97,6 +107,15 @@ class StyleEditor {
         const root = document.documentElement;
         const s = this.styles;
 
+        // Colores Globales
+        if (s.colors) {
+            root.style.setProperty('--primary', s.colors.primary);
+            root.style.setProperty('--secondary', s.colors.secondary);
+            root.style.setProperty('--bg', s.colors.background);
+            root.style.setProperty('--text', s.colors.text);
+            // Derived colors could be calculated here (e.g. surface)
+        }
+
         // Tarjetas
         root.style.setProperty('--card-bg-opacity', s.cards.bgOpacity);
         root.style.setProperty('--card-border-radius', `${s.cards.borderRadius}px`);
@@ -143,130 +162,170 @@ class StyleEditor {
     createPanel() {
         this.panel = document.createElement('div');
         this.panel.id = 'styleEditorPanel';
-        this.panel.className = 'style-editor-panel';
+        this.panel.className = 'style-editor-panel floating-module';
         this.panel.innerHTML = `
-            <div class="style-panel-header">
+            <div class="panel-header">
                 <h2>🎨 Estilos</h2>
                 <button id="closeStylePanel" class="close-btn">&times;</button>
             </div>
-            <div class="style-panel-content">
+            <div class="panel-content">
+                <!-- COLORES -->
+                <div class="control-group">
+                    <h3>🎨 Colores Globales</h3>
+                </div>
+                <div class="control-group">
+                    <label>Primario</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="globalPrimaryColor">
+                        <input type="text" id="globalPrimaryText" placeholder="#...">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Secundario</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="globalSecondaryColor">
+                        <input type="text" id="globalSecondaryText" placeholder="#...">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Fondo</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="globalBgColor">
+                        <input type="text" id="globalBgText" placeholder="#...">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Texto</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="globalTextColor">
+                        <input type="text" id="globalTextText" placeholder="#...">
+                    </div>
+                </div>
+
                 <!-- TARJETAS -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>🃏 Tarjetas</h3>
-                    <div class="style-control">
-                        <label>Opacidad Fondo: <span id="cardBgOpacityValue">${Math.round(this.styles.cards.bgOpacity * 100)}%</span></label>
-                        <input type="range" id="cardBgOpacity" min="0" max="30" value="${this.styles.cards.bgOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Radio Bordes: <span id="cardBorderRadiusValue">${this.styles.cards.borderRadius}px</span></label>
-                        <input type="range" id="cardBorderRadius" min="0" max="50" value="${this.styles.cards.borderRadius}">
-                    </div>
-                    <div class="style-control">
-                        <label>Padding: <span id="cardPaddingValue">${this.styles.cards.padding}rem</span></label>
-                        <input type="range" id="cardPadding" min="1" max="5" step="0.5" value="${this.styles.cards.padding}">
-                    </div>
-                    <div class="style-control">
-                        <label>Gap: <span id="cardGapValue">${this.styles.cards.gap}rem</span></label>
-                        <input type="range" id="cardGap" min="0.5" max="4" step="0.5" value="${this.styles.cards.gap}">
-                    </div>
-                    <div class="style-control">
-                        <label>Sombra</label>
-                        <input type="checkbox" id="cardShadow" ${this.styles.cards.shadow ? 'checked' : ''}>
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Opacidad Fondo: <span id="cardBgOpacityValue">${Math.round(this.styles.cards.bgOpacity * 100)}%</span></label>
+                    <input type="range" id="cardBgOpacity" min="0" max="30" value="${this.styles.cards.bgOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Radio Bordes: <span id="cardBorderRadiusValue">${this.styles.cards.borderRadius}px</span></label>
+                    <input type="range" id="cardBorderRadius" min="0" max="50" value="${this.styles.cards.borderRadius}">
+                </div>
+                <div class="control-group">
+                    <label>Padding: <span id="cardPaddingValue">${this.styles.cards.padding}rem</span></label>
+                    <input type="range" id="cardPadding" min="1" max="5" step="0.5" value="${this.styles.cards.padding}">
+                </div>
+                <div class="control-group">
+                    <label>Gap: <span id="cardGapValue">${this.styles.cards.gap}rem</span></label>
+                    <input type="range" id="cardGap" min="0.5" max="4" step="0.5" value="${this.styles.cards.gap}">
+                </div>
+                <div class="control-group">
+                    <label>Sombra</label>
+                    <input type="checkbox" id="cardShadow" ${this.styles.cards.shadow ? 'checked' : ''}>
                 </div>
 
                 <!-- BOTONES -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>🔘 Botones</h3>
-                    <div class="style-control">
-                        <label>Radio Bordes: <span id="btnBorderRadiusValue">${this.styles.buttons.borderRadius}px</span></label>
-                        <input type="range" id="btnBorderRadius" min="0" max="30" value="${this.styles.buttons.borderRadius}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Radio Bordes: <span id="btnBorderRadiusValue">${this.styles.buttons.borderRadius}px</span></label>
+                    <input type="range" id="btnBorderRadius" min="0" max="30" value="${this.styles.buttons.borderRadius}">
                 </div>
 
                 <!-- SECCIONES -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>📄 Secciones</h3>
-                    <div class="style-control">
-                        <label>Servicios Opacidad: <span id="servicesOpacityValue">${Math.round(this.styles.sections.servicesOpacity * 100)}%</span></label>
-                        <input type="range" id="servicesOpacity" min="0" max="100" value="${this.styles.sections.servicesOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Beneficios Opacidad: <span id="benefitsOpacityValue">${Math.round(this.styles.sections.benefitsOpacity * 100)}%</span></label>
-                        <input type="range" id="benefitsOpacity" min="0" max="100" value="${this.styles.sections.benefitsOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Contacto Opacidad: <span id="contactOpacityValue">${Math.round(this.styles.sections.contactOpacity * 100)}%</span></label>
-                        <input type="range" id="contactOpacity" min="0" max="100" value="${this.styles.sections.contactOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Padding: <span id="sectionPaddingValue">${this.styles.sections.padding}rem</span></label>
-                        <input type="range" id="sectionPadding" min="2" max="10" step="0.5" value="${this.styles.sections.padding}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Servicios Opacidad: <span id="servicesOpacityValue">${Math.round(this.styles.sections.servicesOpacity * 100)}%</span></label>
+                    <input type="range" id="servicesOpacity" min="0" max="100" value="${this.styles.sections.servicesOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Beneficios Opacidad: <span id="benefitsOpacityValue">${Math.round(this.styles.sections.benefitsOpacity * 100)}%</span></label>
+                    <input type="range" id="benefitsOpacity" min="0" max="100" value="${this.styles.sections.benefitsOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Contacto Opacidad: <span id="contactOpacityValue">${Math.round(this.styles.sections.contactOpacity * 100)}%</span></label>
+                    <input type="range" id="contactOpacity" min="0" max="100" value="${this.styles.sections.contactOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Padding: <span id="sectionPaddingValue">${this.styles.sections.padding}rem</span></label>
+                    <input type="range" id="sectionPadding" min="2" max="10" step="0.5" value="${this.styles.sections.padding}">
                 </div>
 
                 <!-- TIPOGRAFÍA -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>✏️ Tipografía</h3>
-                    <div class="style-control">
-                        <label>Tamaño Títulos: <span id="titleSizeValue">${this.styles.texts.titleSize}rem</span></label>
-                        <input type="range" id="titleSize" min="1.5" max="4" step="0.25" value="${this.styles.texts.titleSize}">
-                    </div>
-                    <div class="style-control">
-                        <label>Tamaño Texto: <span id="bodySizeValue">${this.styles.texts.bodySize}rem</span></label>
-                        <input type="range" id="bodySize" min="0.8" max="1.5" step="0.1" value="${this.styles.texts.bodySize}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Tamaño Títulos: <span id="titleSizeValue">${this.styles.texts.titleSize}rem</span></label>
+                    <input type="range" id="titleSize" min="1.5" max="4" step="0.25" value="${this.styles.texts.titleSize}">
+                </div>
+                <div class="control-group">
+                    <label>Tamaño Texto: <span id="bodySizeValue">${this.styles.texts.bodySize}rem</span></label>
+                    <input type="range" id="bodySize" min="0.8" max="1.5" step="0.1" value="${this.styles.texts.bodySize}">
                 </div>
 
                 <!-- ANIMACIONES -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>⚡ Animaciones</h3>
-                    <div class="style-control">
-                        <label>Velocidad: <span id="transitionSpeedValue">${this.styles.animations.transitionSpeed}s</span></label>
-                        <input type="range" id="transitionSpeed" min="0.1" max="1" step="0.1" value="${this.styles.animations.transitionSpeed}">
-                    </div>
-                    <div class="style-control">
-                        <label>Elevación Hover: <span id="hoverLiftValue">${this.styles.animations.hoverLift}px</span></label>
-                        <input type="range" id="hoverLift" min="0" max="20" value="${this.styles.animations.hoverLift}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Velocidad: <span id="transitionSpeedValue">${this.styles.animations.transitionSpeed}s</span></label>
+                    <input type="range" id="transitionSpeed" min="0.1" max="1" step="0.1" value="${this.styles.animations.transitionSpeed}">
+                </div>
+                <div class="control-group">
+                    <label>Elevación Hover: <span id="hoverLiftValue">${this.styles.animations.hoverLift}px</span></label>
+                    <input type="range" id="hoverLift" min="0" max="20" value="${this.styles.animations.hoverLift}">
                 </div>
 
                 <!-- EFECTOS -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>✨ Efectos</h3>
-                    <div class="style-control">
-                        <label>Intensidad Glow: <span id="glowIntensityValue">${Math.round(this.styles.effects.glowIntensity * 100)}%</span></label>
-                        <input type="range" id="glowIntensity" min="0" max="100" value="${this.styles.effects.glowIntensity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Opacidad Bordes: <span id="borderOpacityValue">${Math.round(this.styles.effects.borderOpacity * 100)}%</span></label>
-                        <input type="range" id="borderOpacity" min="0" max="30" value="${this.styles.effects.borderOpacity * 100}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Intensidad Glow: <span id="glowIntensityValue">${Math.round(this.styles.effects.glowIntensity * 100)}%</span></label>
+                    <input type="range" id="glowIntensity" min="0" max="100" value="${this.styles.effects.glowIntensity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Opacidad Bordes: <span id="borderOpacityValue">${Math.round(this.styles.effects.borderOpacity * 100)}%</span></label>
+                    <input type="range" id="borderOpacity" min="0" max="30" value="${this.styles.effects.borderOpacity * 100}">
                 </div>
 
                 <!-- GENERAL -->
-                <div class="style-section">
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
+                <div class="control-group">
                     <h3>🌐 General</h3>
-                    <div class="style-control">
-                        <label>Opacidad Red: <span id="networkOpacityValue">${Math.round(this.styles.general.networkOpacity * 100)}%</span></label>
-                        <input type="range" id="networkOpacity" min="0" max="100" value="${this.styles.general.networkOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Blur Navbar: <span id="navbarBlurValue">${this.styles.general.navbarBlur}px</span></label>
-                        <input type="range" id="navbarBlur" min="0" max="40" value="${this.styles.general.navbarBlur}">
-                    </div>
-                    <div class="style-control">
-                        <label>Opacidad Navbar: <span id="navbarOpacityValue">${Math.round(this.styles.general.navbarOpacity * 100)}%</span></label>
-                        <input type="range" id="navbarOpacity" min="0" max="100" value="${this.styles.general.navbarOpacity * 100}">
-                    </div>
-                    <div class="style-control">
-                        <label>Ancho Contenedor: <span id="containerWidthValue">${this.styles.general.containerWidth}px</span></label>
-                        <input type="range" id="containerWidth" min="800" max="1600" step="50" value="${this.styles.general.containerWidth}">
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Opacidad Red: <span id="networkOpacityValue">${Math.round(this.styles.general.networkOpacity * 100)}%</span></label>
+                    <input type="range" id="networkOpacity" min="0" max="100" value="${this.styles.general.networkOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Blur Navbar: <span id="navbarBlurValue">${this.styles.general.navbarBlur}px</span></label>
+                    <input type="range" id="navbarBlur" min="0" max="40" value="${this.styles.general.navbarBlur}">
+                </div>
+                <div class="control-group">
+                    <label>Opacidad Navbar: <span id="navbarOpacityValue">${Math.round(this.styles.general.navbarOpacity * 100)}%</span></label>
+                    <input type="range" id="navbarOpacity" min="0" max="100" value="${this.styles.general.navbarOpacity * 100}">
+                </div>
+                <div class="control-group">
+                    <label>Ancho Contenedor: <span id="containerWidthValue">${this.styles.general.containerWidth}px</span></label>
+                    <input type="range" id="containerWidth" min="800" max="1600" step="50" value="${this.styles.general.containerWidth}">
                 </div>
 
                 <!-- ACCIONES -->
-                <div class="style-actions">
+                <div class="panel-actions">
                     <button id="saveStylesBtn" class="save-btn">💾 Guardar</button>
                     <button id="resetStylesBtn" class="reset-btn">Restablecer</button>
                 </div>
@@ -275,39 +334,54 @@ class StyleEditor {
 
         document.body.appendChild(this.panel);
 
-        // Botón para abrir el panel
-        this.createToggleButton();
         this.setupEvents();
+        this.setupDockButton();
+        this.updatePanelValues(); // Update initially
     }
 
-    // ============================================
-    // MÉTODO: createToggleButton
-    // ============================================
-    createToggleButton() {
-        const btn = document.createElement('button');
-        btn.id = 'styleEditorBtn';
-        btn.className = 'style-editor-button';
-        btn.innerHTML = '🎨 <span>Estilos</span>';
-        document.body.appendChild(btn);
+    setupDockButton() {
+        if (!globalThis.prototyper) return;
 
-        btn.addEventListener('click', () => {
-            this.panel.classList.add('active');
-            btn.style.opacity = '0';
-            btn.style.pointerEvents = 'none';
+        globalThis.prototyper.addDockButton({
+            id: 'dockStyleBtn',
+            icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>`,
+            tooltip: 'Estilos Globales',
+            onClick: () => this.togglePanel()
         });
+    }
+
+    togglePanel() {
+        const isActive = this.panel.classList.contains('active');
+        if (isActive) {
+            this.panel.classList.remove('active');
+        } else {
+            globalThis.prototyper.closeAllPanels();
+            this.panel.classList.add('active');
+            const btn = document.getElementById('dockStyleBtn');
+            if (btn) btn.classList.add('active');
+        }
     }
 
     // ============================================
     // MÉTODO: setupEvents
     // ============================================
     setupEvents() {
+        window.addEventListener('proto-ui-close-all', () => {
+            if (this.panel.classList.contains('active')) {
+                this.togglePanel();
+            }
+        });
+
         // Cerrar panel
         document.getElementById('closeStylePanel').addEventListener('click', () => {
-            this.panel.classList.remove('active');
-            const btn = document.getElementById('styleEditorBtn');
-            btn.style.opacity = '1';
-            btn.style.pointerEvents = 'auto';
+            this.togglePanel();
         });
+
+        // COLORES
+        this.setupColor('globalPrimaryColor', 'globalPrimaryText', 'primary');
+        this.setupColor('globalSecondaryColor', 'globalSecondaryText', 'secondary');
+        this.setupColor('globalBgColor', 'globalBgText', 'background');
+        this.setupColor('globalTextColor', 'globalTextText', 'text');
 
         // ---- TARJETAS ----
         this.setupSlider('cardBgOpacity', 'cardBgOpacityValue', (v) => {
@@ -434,9 +508,43 @@ class StyleEditor {
     }
 
     // ============================================
+    // MÉTODO: setupColor
+    // ============================================
+    setupColor(pickerId, textId, propName) {
+        const picker = document.getElementById(pickerId);
+        const text = document.getElementById(textId);
+
+        picker.addEventListener('input', (e) => {
+            text.value = e.target.value;
+            if (!this.styles.colors) this.styles.colors = {};
+            this.styles.colors[propName] = e.target.value;
+            this.applyStyles();
+        });
+
+        text.addEventListener('change', (e) => {
+            picker.value = e.target.value;
+            if (!this.styles.colors) this.styles.colors = {};
+            this.styles.colors[propName] = e.target.value;
+            this.applyStyles();
+        });
+    }
+
+    // ============================================
     // MÉTODO: updatePanelValues
     // ============================================
     updatePanelValues() {
+        // Colores
+        if (this.styles.colors) {
+            const updateColor = (pickerId, textId, val) => {
+                document.getElementById(pickerId).value = val;
+                document.getElementById(textId).value = val;
+            };
+            updateColor('globalPrimaryColor', 'globalPrimaryText', this.styles.colors.primary);
+            updateColor('globalSecondaryColor', 'globalSecondaryText', this.styles.colors.secondary);
+            updateColor('globalBgColor', 'globalBgText', this.styles.colors.background);
+            updateColor('globalTextColor', 'globalTextText', this.styles.colors.text);
+        }
+
         // Tarjetas
         document.getElementById('cardBgOpacity').value = this.styles.cards.bgOpacity * 100;
         document.getElementById('cardBgOpacityValue').textContent = `${Math.round(this.styles.cards.bgOpacity * 100)}%`;

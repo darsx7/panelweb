@@ -27,17 +27,19 @@ Prototipo interactivo con:
 
     <!-- Hoja de estilos principal -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="prototyper.css">
 
     <!-- Fuente Inter de Google Fonts (moderna y legible) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+
     <!-- ============================================
          CANVAS: Fondo de red interactiva
          La animación se controla desde network.js
          ============================================ -->
-    <canvas id="networkCanvas"></canvas>
+
 
 
     <!-- ============================================
@@ -69,15 +71,30 @@ Prototipo interactivo con:
          ============================================ -->
     <section id="inicio" class="hero">
         <div class="hero-content">
-            <h1 class="hero-title" data-content="hero.title">Energía Solar Para Tu Futuro</h1>
-            <p class="hero-subtitle" data-content="hero.subtitle">Transforma la luz del sol en ahorro real. Instalación
-                profesional de paneles solares con la mejor tecnología del mercado.</p>
+            <h1 class="hero-title" data-content="hero.title">Energía Sostenible Para Tu Futuro</h1>
+            <p class="hero-subtitle" data-content="hero.subtitle">Soluciones integrales en energía solar, eficiencia energética e hidrógeno verde. Acompañamos a empresas, instituciones y comunidades desde la evaluación inicial hasta la implementación de sistemas sustentables.</p>
             <div class="hero-buttons">
-                <button class="btn btn-primary" data-content="hero.ctaPrimary">Solicitar Cotización</button>
-                <button class="btn btn-secondary" data-content="hero.ctaSecondary">Ver Proyectos</button>
+                <button class="btn btn-primary" data-content="hero.ctaPrimary">Solicitar Evaluación</button>
+                <button class="btn btn-secondary" data-content="hero.ctaSecondary">Conocer Servicios</button>
             </div>
             <div class="hero-stats" data-section="hero.stats">
-                <!-- Stats se generan dinámicamente -->
+                <div class="stat-item" data-index="0" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <span class="stat-number" data-content="hero.stats.0.number">30%</span>
+                    <span class="stat-label" data-content="hero.stats.0.label">Ahorro Garantizado</span>
+                </div>
+
+                <div class="stat-item" data-index="1" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <span class="stat-number" data-content="hero.stats.1.number">100%</span>
+                    <span class="stat-label" data-content="hero.stats.1.label">Compromiso Ambiental</span>
+                </div>
+
+                <div class="stat-item" data-index="2" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <span class="stat-number" data-content="hero.stats.2.number">5</span>
+                    <span class="stat-label" data-content="hero.stats.2.label">Años de Experiencia</span>
+                </div>
             </div>
         </div>
     </section>
@@ -90,40 +107,101 @@ Prototipo interactivo con:
     <section id="servicios" class="services">
         <h2 class="section-title" data-content="services.title">Nuestros Servicios</h2>
         <div class="services-grid" data-section="services">
-            <!-- Tarjetas de servicios se generan dinámicamente -->
-        </div>
+                <div class="service-card" data-glow="" data-index="0" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="card-icon" data-content="services.0.icon">⚡</div>
+                    <h3 data-content="services.0.title">Sistemas Fotovoltaicos</h3>
+                    <p data-content="services.0.description">Instalación profesional de sistemas monofásicos y trifásicos adaptados a tu consumo y necesidades energéticas.</p>
+                    <a href="#" class="card-link">Saber más →</a>
+                </div>
+
+                <div class="service-card" data-glow="" data-index="1" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="card-icon" data-content="services.1.icon">🔧</div>
+                    <h3 data-content="services.1.title">Mantenimiento</h3>
+                    <p data-content="services.1.description">Servicio preventivo y correctivo para mantener tus paneles funcionando al máximo rendimiento.</p>
+                    <a href="#" class="card-link">Saber más →</a>
+                </div>
+
+                <div class="service-card" data-glow="" data-index="2" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="card-icon" data-content="services.2.icon">📊</div>
+                    <h3 data-content="services.2.title">Auditorías Energéticas</h3>
+                    <p data-content="services.2.description">Diagnósticos de consumo y evaluación técnica-económica para optimizar tus recursos energéticos.</p>
+                    <a href="#" class="card-link">Saber más →</a>
+                </div>
+
+                <div class="service-card" data-glow="" data-index="3" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="card-icon" data-content="services.3.icon">🌱</div>
+                    <h3 data-content="services.3.title">Consultoría Verde</h3>
+                    <p data-content="services.3.description">Asesoría en integración de renovables, reducción de huella de carbono y certificaciones energéticas.</p>
+                    <a href="#" class="card-link">Saber más →</a>
+                </div>
+            </div>
     </section>
 
     <!-- Benefits Section -->
     <section id="beneficios" class="benefits">
-        <h2 class="section-title" data-content="benefits.title">¿Por qué Elegirnos?</h2>
+        <h2 class="section-title" data-content="benefits.title">Nuestros 5 Pilares</h2>
         <div class="benefits-grid" data-section="benefits">
-            <!-- Tarjetas de beneficios se generan dinámicamente -->
-        </div>
+                <div class="benefit-item" data-glow="" data-index="0" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="benefit-icon" data-content="benefits.0.icon">🌍</div>
+                    <h4 data-content="benefits.0.title">Sostenibilidad</h4>
+                    <p data-content="benefits.0.description">Reducimos la huella de carbono y promovemos el uso responsable de los recursos naturales.</p>
+                </div>
+
+                <div class="benefit-item" data-glow="" data-index="1" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="benefit-icon" data-content="benefits.1.icon">🤝</div>
+                    <h4 data-content="benefits.1.title">Compromiso Social</h4>
+                    <p data-content="benefits.1.description">Trabajamos con comunidades, liceos y vecinos impulsando la educación ambiental.</p>
+                </div>
+
+                <div class="benefit-item" data-glow="" data-index="2" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="benefit-icon" data-content="benefits.2.icon">⚙️</div>
+                    <h4 data-content="benefits.2.title">Excelencia Técnica</h4>
+                    <p data-content="benefits.2.description">Altos estándares y mejora continua con innovación tecnológica en cada proyecto.</p>
+                </div>
+
+                <div class="benefit-item" data-glow="" data-index="3" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="benefit-icon" data-content="benefits.3.icon">📚</div>
+                    <h4 data-content="benefits.3.title">Educación</h4>
+                    <p data-content="benefits.3.description">Capacitación y transferencia de conocimientos para fortalecer capacidades locales.</p>
+                </div>
+
+                <div class="benefit-item" data-glow="" data-index="4" draggable="false">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="benefit-icon" data-content="benefits.4.icon">💚</div>
+                    <h4 data-content="benefits.4.title">Valor Compartido</h4>
+                    <p data-content="benefits.4.description">Creamos empleo verde y relaciones de largo plazo basadas en confianza mutua.</p>
+                </div>
+            </div>
     </section>
 
     <!-- Contact Section -->
     <section id="contacto" class="contact">
         <div class="contact-content">
-            <h2 class="section-title" data-content="contact.title">¿Listo para el Cambio?</h2>
-            <p class="contact-text" data-content="contact.subtitle">Obtén una cotización gratuita y personalizada para
-                tu proyecto</p>
+            <h2 class="section-title" data-content="contact.title">¿Listo Para el Cambio?</h2>
+            <p class="contact-text" data-content="contact.subtitle">Obtén una evaluación gratuita y personalizada para tu proyecto energético</p>
             <form class="contact-form">
                 <div class="form-row">
-                    <input type="text" placeholder="Nombre completo" class="form-input" data-glow>
-                    <input type="email" placeholder="Correo electrónico" class="form-input" data-glow>
+                    <input type="text" placeholder="Nombre completo" class="form-input" data-glow="">
+                    <input type="email" placeholder="Correo electrónico" class="form-input" data-glow="">
                 </div>
                 <div class="form-row">
-                    <input type="tel" placeholder="Teléfono" class="form-input" data-glow>
-                    <select class="form-input" data-glow>
+                    <input type="tel" placeholder="Teléfono" class="form-input" data-glow="">
+                    <select class="form-input" data-glow="">
                         <option value="">Tipo de proyecto</option>
                         <option value="residencial">Residencial</option>
                         <option value="comercial">Comercial</option>
                         <option value="industrial">Industrial</option>
                     </select>
                 </div>
-                <textarea placeholder="Cuéntanos sobre tu proyecto..." class="form-input form-textarea"
-                    data-glow></textarea>
+                <textarea placeholder="Cuéntanos sobre tu proyecto..." class="form-input form-textarea" data-glow=""></textarea>
                 <button type="submit" class="btn btn-primary btn-full">Enviar Solicitud</button>
             </form>
         </div>
@@ -134,113 +212,43 @@ Prototipo interactivo con:
         <div class="footer-content">
             <div class="footer-brand">
                 <span class="brand-icon">☀️</span>
-                <span class="brand-text" data-content="siteName">SolarTech</span>
+                <span class="brand-text" data-content="siteName">Eficell</span>
             </div>
-            <p class="footer-text" data-content="footer.copyright">© 2026 SolarTech. Energía limpia para un futuro
-                mejor.</p>
+            <p class="footer-text" data-content="footer.copyright">© 2026 Eficell Consultores SpA. Energía sostenible para un futuro mejor.</p>
         </div>
     </footer>
 
-    <!-- Edit Button -->
-    <button id="editBtn" class="edit-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-        </svg>
-        <span>Editar Red</span>
-    </button>
 
-    <!-- Edit Panel -->
-    <div id="editPanel" class="edit-panel">
-        <div class="panel-header">
-            <h2>Configuración de Red</h2>
-            <button id="closePanel" class="close-btn">&times;</button>
-        </div>
+    <!-- El panel de estilos se genera dinámicamente en style-editor.js, pero le añadiremos la clase floating-module en JS -->
 
-        <div class="panel-content">
-            <div class="control-group">
-                <label for="interactionType">Tipo de Interacción</label>
-                <select id="interactionType">
-                    <option value="repel">Repeler</option>
-                    <option value="attract">Atraer</option>
-                    <option value="glow">Iluminar</option>
-                    <option value="wave">Onda</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label for="gridDensity">Densidad de Malla: <span id="gridDensityValue">40</span>px</label>
-                <input type="range" id="gridDensity" min="20" max="80" value="40">
-            </div>
-
-            <div class="control-group">
-                <label for="interactionRadius">Radio de Interacción: <span
-                        id="interactionRadiusValue">150</span>px</label>
-                <input type="range" id="interactionRadius" min="50" max="300" value="150">
-            </div>
-
-            <div class="control-group">
-                <label for="lineColor">Color de Red</label>
-                <input type="color" id="lineColor" value="#f59e0b">
-            </div>
-
-            <div class="control-group">
-                <label for="glowColor">Color de Iluminación</label>
-                <input type="color" id="glowColor" value="#fbbf24">
-            </div>
-
-            <!-- Botones de acción del panel -->
-            <div class="panel-actions">
-
-                <!-- Botón Guardar: guarda el estado actual en config.json (requiere servidor) -->
-                <button id="saveBtn" class="save-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                        <polyline points="7 3 7 8 15 8"></polyline>
-                    </svg>
-                    Guardar
-                </button>
-
-                <!-- Fila de botones Exportar/Importar -->
-                <div class="btn-row">
-                    <!-- Botón Exportar: descarga la configuración visual actual -->
-                    <button id="exportBtn" class="export-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        Exportar
-                    </button>
-
-                    <!-- Botón Importar: carga configuración desde archivo JSON -->
-                    <button id="importBtn" class="import-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="17 8 12 3 7 8"></polyline>
-                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        Importar
-                    </button>
-                </div>
-
-                <!-- Input oculto para seleccionar archivo (activado por el botón Importar) -->
-                <input type="file" id="importFile" accept=".json" style="display: none;">
-
-                <!-- Botón Restablecer: vuelve a los valores por defecto -->
-                <button id="resetBtn" class="reset-btn">Restablecer</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Scripts -->
+    <script src="prototyper.js"></script> <!-- Core Engine (Loads First) -->
     <script src="network.js"></script>
-    <script src="editor.js"></script>
     <script src="style-editor.js"></script>
+    <script src="editor.js"></script>
+    <script src="inspector.js"></script>
+    <script src="palette.js"></script>
+
+
+
+<div id="contentActionsPanel" class="content-actions-panel" style="display: none;">
+            <h3 style="font-size:0.9rem; margin-bottom:0.5rem; color:var(--text-secondary);">Edición de Contenido</h3>
+            <button id="saveContentBtn" class="save-btn">
+                💾 Guardar
+            </button>
+            <div class="btn-row">
+                <button id="exportContentBtn" class="export-btn">
+                    📤 Exportar
+                </button>
+                <button id="importContentBtn" class="import-btn">
+                    📥 Importar
+                </button>
+            </div>
+            <input type="file" id="importContentFile" accept=".json" style="display: none;">
+            <button id="cancelEditBtn" class="reset-btn">
+                ↩️ Cancelar
+            </button>
+        </div>
 </body>
 
 </html>
