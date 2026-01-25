@@ -9,34 +9,44 @@
 class Palette {
     constructor() {
         this.panel = null;
+        this.activeCategory = 'layout';
+        this.dropMarker = null;
+        this.currentDropTarget = null;
+
+        // Define components with categories
         this.components = [
+            // LAYOUT
             {
-                id: 'container',
-                label: 'Contenedor',
+                id: 'container', category: 'layout', label: 'Contenedor',
                 icon: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>',
-                html: '<div style="padding: 2rem; border: 1px dashed rgba(255,255,255,0.2); min-height: 100px;">Contenedor Vacío</div>'
+                html: '<div style="padding: 2rem; border: 1px dashed rgba(255,255,255,0.2); min-height: 100px;"></div>'
             },
             {
-                id: 'heading',
-                label: 'Título',
+                id: 'grid-2', category: 'layout', label: 'Grid 2 Col',
+                icon: '<rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line>',
+                html: '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;"><div style="border: 1px dashed rgba(255,255,255,0.2); min-height: 50px;"></div><div style="border: 1px dashed rgba(255,255,255,0.2); min-height: 50px;"></div></div>'
+            },
+
+            // TYPOGRAPHY
+            {
+                id: 'heading', category: 'typography', label: 'Título',
                 icon: '<path d="M4 7V4h16v3M9 20h6M12 4v16"></path>',
                 html: '<h2 style="font-size: 2rem; margin-bottom: 1rem;">Nuevo Título</h2>'
             },
             {
-                id: 'text',
-                label: 'Párrafo',
+                id: 'text', category: 'typography', label: 'Párrafo',
                 icon: '<line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line>',
                 html: '<p style="margin-bottom: 1rem; line-height: 1.6;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>'
             },
+
+            // UI ELEMENTS
             {
-                id: 'button',
-                label: 'Botón',
+                id: 'button', category: 'ui', label: 'Botón',
                 icon: '<rect x="5" y="11" width="14" height="10" rx="2"></rect><circle cx="12" cy="16" r="2"></circle>',
                 html: '<button class="btn btn-primary">Click Aquí</button>'
             },
             {
-                id: 'card',
-                label: 'Tarjeta',
+                id: 'card', category: 'ui', label: 'Tarjeta',
                 icon: '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>',
                 html: `
                 <div class="service-card" style="padding: 2rem; border-radius: 1rem; background: rgba(255,255,255,0.05);">
@@ -45,17 +55,16 @@ class Palette {
                     <p>Descripción del servicio o característica.</p>
                 </div>`
             },
+
+            // MEDIA
             {
-                id: 'image',
-                label: 'Imagen',
+                id: 'image', category: 'media', label: 'Imagen',
                 icon: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline>',
                 html: '<img src="https://via.placeholder.com/400x300" alt="Placeholder" style="width: 100%; border-radius: 8px; margin-bottom: 1rem;">'
             }
         ];
 
-        this.draggedHTML = null;
-        this.dropTarget = null;
-
+        this.draggedItem = null;
         this.init();
     }
 
@@ -63,6 +72,14 @@ class Palette {
         this.createPanel();
         this.setupDockButton();
         this.setupDragEvents();
+        this.createDropMarker();
+    }
+
+    createDropMarker() {
+        this.dropMarker = document.createElement('div');
+        this.dropMarker.className = 'proto-drop-marker';
+        this.dropMarker.style.display = 'none';
+        document.body.appendChild(this.dropMarker);
     }
 
     // ============================================
@@ -73,7 +90,26 @@ class Palette {
         this.panel.id = 'palettePanel';
         this.panel.className = 'floating-module palette-panel';
 
-        const itemsHTML = this.components.map(comp => `
+        this.renderPanelContent();
+        document.body.appendChild(this.panel);
+    }
+
+    renderPanelContent() {
+        const categories = [
+            { id: 'layout', label: 'Layout' },
+            { id: 'typography', label: 'Texto' },
+            { id: 'ui', label: 'UI' },
+            { id: 'media', label: 'Media' }
+        ];
+
+        // Tabs
+        const tabsHTML = categories.map(cat =>
+            `<button class="palette-tab ${this.activeCategory === cat.id ? 'active' : ''}" data-cat="${cat.id}">${cat.label}</button>`
+        ).join('');
+
+        // Items
+        const items = this.components.filter(c => c.category === this.activeCategory);
+        const itemsHTML = items.map(comp => `
             <div class="palette-item" draggable="true" data-id="${comp.id}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     ${comp.icon}
@@ -87,16 +123,34 @@ class Palette {
                 <h2>🧩 Componentes</h2>
                 <button class="close-btn" id="closePalette">&times;</button>
             </div>
-            <div class="panel-content palette-grid">
-                ${itemsHTML}
-                <div class="palette-info">
-                    <small>Arrastra los elementos al lienzo para insertarlos.</small>
-                </div>
+            <div class="panel-content">
+                <div class="palette-tabs">${tabsHTML}</div>
+                <div class="palette-grid">${itemsHTML}</div>
+                <div class="palette-info"><small>Arrastra para insertar</small></div>
             </div>
         `;
-        document.body.appendChild(this.panel);
 
-        // Events for draggable items (Source)
+        // Bind Events
+        this.panel.querySelectorAll('.palette-tab').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent click-through issues since we re-render DOM
+                this.activeCategory = btn.dataset.cat;
+                this.renderPanelContent(); // Re-render logic is simple here
+                this.bindDragEvents(); // Re-bind drag events for new items
+
+                // Keep panel open logic
+                this.panel.querySelector('#closePalette').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.closePanel();
+                });
+            });
+        });
+
+        this.panel.querySelector('#closePalette').addEventListener('click', () => this.closePanel());
+        this.bindDragEvents();
+    }
+
+    bindDragEvents() {
         this.panel.querySelectorAll('.palette-item').forEach(item => {
             item.addEventListener('dragstart', (e) => this.handleDragStart(e, item));
             item.addEventListener('dragend', (e) => this.handleDragEnd(e));
@@ -111,10 +165,6 @@ class Palette {
             icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`,
             tooltip: 'Componentes',
             onClick: () => this.togglePanel()
-        });
-
-        this.panel.querySelector('#closePalette').addEventListener('click', () => {
-            this.closePanel();
         });
     }
 
@@ -146,86 +196,120 @@ class Palette {
     handleDragStart(e, item) {
         const compId = item.dataset.id;
         const comp = this.components.find(c => c.id === compId);
+        this.draggedItem = comp;
 
-        this.draggedHTML = comp.html;
         e.dataTransfer.effectAllowed = 'copy';
         e.dataTransfer.setData('text/html', comp.html);
 
-        // Visual feedback
-        item.style.opacity = '0.5';
+        // Custom Ghost Image
+        const ghost = document.createElement('div');
+        ghost.className = 'proto-ghost-drag';
+        ghost.innerHTML = `${comp.icon} <span>${comp.label}</span>`;
+        document.body.appendChild(ghost);
+        e.dataTransfer.setDragImage(ghost, 20, 20);
+        setTimeout(() => ghost.remove(), 0);
 
-        // Notify Prototyper (optional)
         document.body.classList.add('dragging-active');
     }
 
     handleDragEnd(e) {
-        e.target.style.opacity = '1';
         document.body.classList.remove('dragging-active');
-        this.clearDropTarget();
+        this.hideMarker();
+        this.draggedItem = null;
+        this.currentDropTarget = null;
     }
 
-    // ============================================
-    // LOGIC: Drop Zone (The Whole Document)
-    // ============================================
     setupDragEvents() {
-        // These events are on the DESTINATION (Document)
         document.addEventListener('dragover', (e) => this.handleDragOver(e));
-        document.addEventListener('dragleave', (e) => this.handleDragLeave(e));
         document.addEventListener('drop', (e) => this.handleDrop(e));
     }
 
     handleDragOver(e) {
-        if (!this.draggedHTML) return; // Only handle our own drags
-        e.preventDefault(); // Allow drop
-        e.dataTransfer.dropEffect = 'copy';
+        if (!this.draggedItem) return;
+        e.preventDefault();
 
         const target = e.target;
+        if (this.shouldIgnore(target)) return;
 
-        // Ignore drops on system UI
-        if (target.closest('.dock-container') || target.closest('.floating-module')) return;
-
-        // Visual feedback on target
-        if (this.dropTarget !== target) {
-            this.clearDropTarget();
-            this.dropTarget = target;
-            this.dropTarget.classList.add('proto-drop-target');
+        // Calculate insertion point
+        const dropInfo = this.calculateDropPosition(e.clientX, e.clientY, target);
+        if (dropInfo) {
+            this.showMarker(dropInfo);
+            this.currentDropTarget = dropInfo;
+            e.dataTransfer.dropEffect = 'copy';
+        } else {
+            this.hideMarker();
+            this.currentDropTarget = null;
+            e.dataTransfer.dropEffect = 'none';
         }
     }
 
-    handleDragLeave(e) {
-        // Only clear if we really left the element (not entered a child)
-        // This is tricky, simplified:
-        if (e.target === this.dropTarget) {
-            // this.clearDropTarget(); // Flickers too much
+    calculateDropPosition(x, y, target) {
+        // If hovering body or main containers, check children
+        // Simplified: We assume we can insert relative to any block element
+        const rect = target.getBoundingClientRect();
+
+        // Check if target is a container we can insert INSIDE (e.g. empty div)
+        // For now, we mainly insert BEFORE or AFTER elements unless it's explicitly a container
+
+        const isContainer = target.id === 'hero' || target.classList.contains('hero-content') || target.tagName === 'SECTION' || target.id.includes('grid');
+
+        // Logic:
+        // If y < middle -> Insert Before
+        // If y > middle -> Insert After
+
+        const midY = rect.top + rect.height / 2;
+        const position = y < midY ? 'before' : 'after';
+
+        return {
+            element: target,
+            position: position,
+            rect: rect
+        };
+    }
+
+    showMarker(info) {
+        this.dropMarker.style.display = 'block';
+        this.dropMarker.style.width = `${info.rect.width}px`;
+        this.dropMarker.style.left = `${info.rect.left + window.scrollX}px`;
+
+        if (info.position === 'before') {
+            this.dropMarker.style.top = `${info.rect.top + window.scrollY - 2}px`;
+        } else {
+            this.dropMarker.style.top = `${info.rect.bottom + window.scrollY - 2}px`;
         }
+    }
+
+    hideMarker() {
+        this.dropMarker.style.display = 'none';
     }
 
     handleDrop(e) {
-        if (!this.draggedHTML) return;
+        if (!this.draggedItem || !this.currentDropTarget) return;
         e.preventDefault();
 
-        const target = this.dropTarget;
-        if (!target) return;
+        const { element, position } = this.currentDropTarget;
 
-        // Insert HTML
-        // Insert as last child
-        target.insertAdjacentHTML('beforeend', this.draggedHTML);
+        if (position === 'before') {
+            element.insertAdjacentHTML('beforebegin', this.draggedItem.html);
+        } else {
+            element.insertAdjacentHTML('afterend', this.draggedItem.html);
+        }
 
-        console.log('✨ Component Dropped');
+        console.log(`✨ Component Inserted ${position}`);
 
-        this.clearDropTarget();
-        this.draggedHTML = null; // Reset
+        this.hideMarker();
     }
 
-    clearDropTarget() {
-        if (this.dropTarget) {
-            this.dropTarget.classList.remove('proto-drop-target');
-            this.dropTarget = null;
-        }
+    shouldIgnore(el) {
+        if (!el) return true;
+        if (el.closest('.dock-container')) return true;
+        if (el.closest('.floating-module')) return true;
+        if (el.tagName === 'HTML') return true;
+        return false;
     }
 }
 
-// Init
 document.addEventListener('DOMContentLoaded', () => {
     globalThis.palette = new Palette();
 });

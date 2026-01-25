@@ -39,6 +39,13 @@ class NetworkMesh {
             interactionType: 'repel'
         };
         this.defaultConfig = { ...this.config };
+
+        this.defaultPresets = {
+            "Calm Blue": { gridDensity: 40, interactionRadius: 150, lineColor: "#3b82f6", glowColor: "#60a5fa", interactionType: "wave" },
+            "Neon Cyber": { gridDensity: 30, interactionRadius: 200, lineColor: "#ec4899", glowColor: "#a855f7", interactionType: "glow" },
+            "Minimal": { gridDensity: 60, interactionRadius: 100, lineColor: "#94a3b8", glowColor: "#cbd5e1", interactionType: "repel" }
+        };
+
         this.time = 0;
     }
 
@@ -91,6 +98,17 @@ class NetworkMesh {
 
             <div class="panel-content">
                 <div class="control-group">
+                    <label>Presets</label>
+                    <div style="display:flex; gap:0.5rem;">
+                        <select id="netPresets" style="flex:1;">
+                            <option value="">Personalizado</option>
+                        </select>
+                        <button id="netSavePresetBtn" class="icon-btn" title="Guardar Preset">💾</button>
+                        <button id="netDeletePresetBtn" class="icon-btn" title="Borrar Preset">🗑</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
                     <label>Tipo de Interacción</label>
                     <select id="netInteractionType">
                         <option value="repel">Repeler</option>
@@ -122,7 +140,7 @@ class NetworkMesh {
 
                 <!-- Botones de acción del panel -->
                 <div class="panel-actions">
-                    <button id="netSaveBtn" class="save-btn">Guardar</button>
+                    <button id="netSaveBtn" class="save-btn">Guardar en Servidor</button>
                     <div class="btn-row">
                         <button id="netExportBtn" class="export-btn">Exportar</button>
                         <button id="netImportBtn" class="import-btn">Importar</button>
@@ -133,6 +151,7 @@ class NetworkMesh {
             </div>
         `;
         document.body.appendChild(this.panel);
+        this.updatePresetSelect();
     }
 
     setupDockButton() {
@@ -204,6 +223,55 @@ class NetworkMesh {
         } catch (error) {
             console.error('Error al parsear JSON:', error);
             alert('El archivo no es un JSON válido');
+        }
+    }
+
+    // ============================================
+    // PRESETS LOGIC
+    // ============================================
+    getPresets() {
+        const stored = localStorage.getItem('netPresets');
+        const custom = stored ? JSON.parse(stored) : {};
+        return { ...this.defaultPresets, ...custom };
+    }
+
+    updatePresetSelect() {
+        const select = this.panel.querySelector('#netPresets');
+        const currentVal = select.value;
+        const presets = this.getPresets();
+
+        select.innerHTML = '<option value="">Personalizado</option>';
+        Object.keys(presets).forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            select.appendChild(opt);
+        });
+
+        select.value = currentVal;
+    }
+
+    savePreset(name) {
+        if (!name) return;
+        const stored = localStorage.getItem('netPresets');
+        const custom = stored ? JSON.parse(stored) : {};
+        custom[name] = { ...this.config };
+        localStorage.setItem('netPresets', JSON.stringify(custom));
+        this.updatePresetSelect();
+        this.panel.querySelector('#netPresets').value = name;
+    }
+
+    deletePreset(name) {
+        if (!name || this.defaultPresets[name]) {
+            alert('No puedes borrar los presets por defecto.');
+            return;
+        }
+        if(confirm(`¿Borrar preset "${name}"?`)) {
+             const stored = localStorage.getItem('netPresets');
+             const custom = stored ? JSON.parse(stored) : {};
+             delete custom[name];
+             localStorage.setItem('netPresets', JSON.stringify(custom));
+             this.updatePresetSelect();
         }
     }
 
@@ -283,6 +351,7 @@ class NetworkMesh {
 
         get('netInteractionType').addEventListener('change', (e) => {
             this.config.interactionType = e.target.value;
+            get('netPresets').value = ''; // Custom
         });
 
         const densityInput = get('netGridDensity');
@@ -291,6 +360,7 @@ class NetworkMesh {
             this.config.gridDensity = parseInt(e.target.value);
             densityVal.textContent = e.target.value;
             this.createGrid();
+            get('netPresets').value = ''; // Custom
         });
 
         const radiusInput = get('netInteractionRadius');
@@ -298,16 +368,43 @@ class NetworkMesh {
         radiusInput.addEventListener('input', (e) => {
             this.config.interactionRadius = parseInt(e.target.value);
             radiusVal.textContent = e.target.value;
+            get('netPresets').value = ''; // Custom
         });
 
         get('netLineColor').addEventListener('input', (e) => {
             this.config.lineColor = e.target.value;
             this.updateCSSVariables();
+            get('netPresets').value = ''; // Custom
         });
 
         get('netGlowColor').addEventListener('input', (e) => {
             this.config.glowColor = e.target.value;
             this.updateCSSVariables();
+            get('netPresets').value = ''; // Custom
+        });
+
+        // Preset Controls
+        get('netPresets').addEventListener('change', (e) => {
+            const name = e.target.value;
+            if (name) {
+                const presets = this.getPresets();
+                if (presets[name]) {
+                    this.config = { ...this.config, ...presets[name] };
+                    this.updateCSSVariables();
+                    this.updateControlsUI();
+                    this.createGrid();
+                }
+            }
+        });
+
+        get('netSavePresetBtn').addEventListener('click', () => {
+            const name = prompt('Nombre del Preset:');
+            if (name) this.savePreset(name);
+        });
+
+        get('netDeletePresetBtn').addEventListener('click', () => {
+            const name = get('netPresets').value;
+            if (name) this.deletePreset(name);
         });
 
         get('netResetBtn').addEventListener('click', () => {
@@ -315,6 +412,7 @@ class NetworkMesh {
             this.updateControlsUI();
             this.updateCSSVariables();
             this.createGrid();
+            get('netPresets').value = '';
         });
 
         const saveBtn = get('netSaveBtn');

@@ -41,7 +41,14 @@ class Inspector {
                     <!-- ID & CLASSES -->
                     <div class="control-group">
                         <label>Selector</label>
-                        <input type="text" id="inspSelector" disabled style="opacity:0.7; background:rgba(0,0,0,0.2);">
+                        <input type="text" id="inspSelector" disabled style="opacity:0.7; background:rgba(0,0,0,0.2); margin-bottom: 0.5rem;">
+
+                        <!-- Classes Manager -->
+                        <div class="classes-input-container">
+                            <input type="text" id="inspClassInput" placeholder="Añadir clase...">
+                            <button id="inspAddClassBtn">+</button>
+                        </div>
+                        <div id="inspClassList" class="chips-container"></div>
                     </div>
 
                     <!-- LAYOUT -->
@@ -93,14 +100,33 @@ class Inspector {
                         </div>
                     </div>
 
-                    <div class="control-row">
-                        <div class="control-col">
-                            <label>Margin (px)</label>
-                            <input type="text" id="inspMargin" placeholder="10px">
-                        </div>
-                        <div class="control-col">
-                            <label>Padding (px)</label>
-                            <input type="text" id="inspPadding" placeholder="10px">
+                    <!-- BOX MODEL EDITOR -->
+                    <div class="control-group">
+                        <div class="box-model-editor">
+                          <div class="box-margin" title="Margin">
+                             <span class="box-label">Margin</span>
+                             <input class="box-input top" data-prop="marginTop" placeholder="-">
+                             <input class="box-input right" data-prop="marginRight" placeholder="-">
+                             <input class="box-input bottom" data-prop="marginBottom" placeholder="-">
+                             <input class="box-input left" data-prop="marginLeft" placeholder="-">
+                             <div class="box-border" title="Border">
+                                <span class="box-label">Border</span>
+                                <input class="box-input top" data-prop="borderTopWidth" placeholder="-">
+                                <input class="box-input right" data-prop="borderRightWidth" placeholder="-">
+                                <input class="box-input bottom" data-prop="borderBottomWidth" placeholder="-">
+                                <input class="box-input left" data-prop="borderLeftWidth" placeholder="-">
+                                <div class="box-padding" title="Padding">
+                                   <span class="box-label">Padding</span>
+                                   <input class="box-input top" data-prop="paddingTop" placeholder="-">
+                                   <input class="box-input right" data-prop="paddingRight" placeholder="-">
+                                   <input class="box-input bottom" data-prop="paddingBottom" placeholder="-">
+                                   <input class="box-input left" data-prop="paddingLeft" placeholder="-">
+                                   <div class="box-content" title="Content">
+                                       <span class="box-dims" id="inspBoxDims">WxH</span>
+                                   </div>
+                                </div>
+                             </div>
+                          </div>
                         </div>
                     </div>
 
@@ -246,8 +272,7 @@ class Inspector {
         // 1. Selection Events
         window.addEventListener('proto-element-selected', (e) => {
             this.onSelect(e.detail);
-            // Auto-open inspector on selection if configured?
-            // Let's force open it for better UX
+            // Auto-open inspector on selection
             this.openPanel();
         });
 
@@ -267,18 +292,29 @@ class Inspector {
 
         // Layout
         bind('inspDisplay', 'display');
-        bind('inspMargin', 'margin');
-        bind('inspPadding', 'padding');
 
-        // Flexbox
+        // Flexbox Controls Logic
+        document.getElementById('inspDisplay').addEventListener('change', (e) => {
+            const isFlex = e.target.value === 'flex' || e.target.value === 'inline-flex';
+            document.getElementById('inspFlexControls').style.display = isFlex ? 'block' : 'none';
+        });
+
         bind('inspFlexDirection', 'flexDirection');
         bind('inspJustifyContent', 'justifyContent');
         bind('inspAlignItems', 'alignItems');
 
-        // Logic to show/hide Flex controls
-        document.getElementById('inspDisplay').addEventListener('change', (e) => {
-            const isFlex = e.target.value === 'flex' || e.target.value === 'inline-flex';
-            document.getElementById('inspFlexControls').style.display = isFlex ? 'block' : 'none';
+        // Box Model Inputs (Generic Handler)
+        this.panel.querySelectorAll('.box-input').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const prop = e.target.dataset.prop;
+                let val = e.target.value;
+                // Auto-append px if number
+                if (val && !isNaN(val)) val += 'px';
+                this.applyStyle(prop, val);
+            });
+            input.addEventListener('keydown', (e) => {
+                 if(e.key === 'Enter') e.target.blur();
+            });
         });
 
         // Size
@@ -291,14 +327,12 @@ class Inspector {
         const colorPicker = document.getElementById('inspColorPicker');
         const colorText = document.getElementById('inspColorText');
 
-        // Sync Picker -> Text -> Element
         colorPicker.addEventListener('input', (e) => {
             colorText.value = e.target.value;
             this.applyStyle('color', e.target.value);
         });
-        // Sync Text -> Picker -> Element
         colorText.addEventListener('change', (e) => {
-            colorPicker.value = e.target.value; // Only works if hex
+            colorPicker.value = e.target.value;
             this.applyStyle('color', e.target.value);
         });
 
@@ -354,6 +388,17 @@ class Inspector {
             }
         });
 
+        // Classes Manager
+        document.getElementById('inspAddClassBtn').addEventListener('click', () => {
+            const input = document.getElementById('inspClassInput');
+            const className = input.value.trim();
+            if (className && this.selectedEl) {
+                this.selectedEl.classList.add(className);
+                input.value = '';
+                this.refreshClasses();
+            }
+        });
+
         // Delete
         document.getElementById('deleteElementBtn').addEventListener('click', () => {
             if (this.selectedEl) {
@@ -374,6 +419,22 @@ class Inspector {
         }
     }
 
+    refreshClasses() {
+        if (!this.selectedEl) return;
+        const container = document.getElementById('inspClassList');
+        container.innerHTML = '';
+        this.selectedEl.classList.forEach(cls => {
+            const chip = document.createElement('div');
+            chip.className = 'class-chip';
+            chip.innerHTML = `<span>${cls}</span> <button>&times;</button>`;
+            chip.querySelector('button').addEventListener('click', () => {
+                this.selectedEl.classList.remove(cls);
+                this.refreshClasses();
+            });
+            container.appendChild(chip);
+        });
+    }
+
     // ============================================
     // LOGIC: Update UI from Element
     // ============================================
@@ -385,49 +446,85 @@ class Inspector {
         controls.style.display = 'block';
         emptyState.style.display = 'none';
 
-        // Populate fields
         const computed = window.getComputedStyle(el);
-        const style = el.style; // Inline styles preferred for editing
+        const style = el.style;
 
         // Selector
-        document.getElementById('inspSelector').value =
-            el.tagName.toLowerCase() + (el.id ? '#'+el.id : '') + (el.className ? '.'+el.className.split(' ')[0] : '');
+        let selector = el.tagName.toLowerCase();
+        if (el.id) selector += '#' + el.id;
+        document.getElementById('inspSelector').value = selector;
+
+        // Classes
+        this.refreshClasses();
+
+        // Helper for setting value and checking if computed
+        const setVal = (id, prop, computedVal, inlineVal) => {
+            const input = document.getElementById(id);
+            if (!input) return;
+
+            // Prefer inline value for editing, but show computed if inline is empty
+            const hasInline = inlineVal && inlineVal !== '';
+            input.value = hasInline ? inlineVal : computedVal;
+
+            // Visual indication
+            if (hasInline) {
+                input.classList.add('inline-style');
+                input.classList.remove('computed-style');
+            } else {
+                input.classList.add('computed-style');
+                input.classList.remove('inline-style');
+            }
+        };
 
         // Layout
-        this.setVal('inspDisplay', computed.display);
+        setVal('inspDisplay', 'display', computed.display, style.display);
 
-        // Show/Hide Flex Controls
         const isFlex = computed.display === 'flex' || computed.display === 'inline-flex';
         document.getElementById('inspFlexControls').style.display = isFlex ? 'block' : 'none';
         if (isFlex) {
-            this.setVal('inspFlexDirection', style.flexDirection || computed.flexDirection);
-            this.setVal('inspJustifyContent', style.justifyContent || computed.justifyContent);
-            this.setVal('inspAlignItems', style.alignItems || computed.alignItems);
+            setVal('inspFlexDirection', 'flexDirection', computed.flexDirection, style.flexDirection);
+            setVal('inspJustifyContent', 'justifyContent', computed.justifyContent, style.justifyContent);
+            setVal('inspAlignItems', 'alignItems', computed.alignItems, style.alignItems);
         }
 
-        this.setVal('inspMargin', style.margin || computed.margin);
-        this.setVal('inspPadding', style.padding || computed.padding);
+        // Box Model
+        this.panel.querySelectorAll('.box-input').forEach(input => {
+            const prop = input.dataset.prop;
+            const val = computed[prop];
+            // Only show number if possible for simpler UI, or full value
+            // Removing 'px' for display might be cleaner but let's keep it exact for now
+            const inline = style[prop];
+
+            const hasInline = inline && inline !== '';
+            input.value = (hasInline ? inline : val).replace('px', ''); // Remove px for cleaner box look
+
+            if (hasInline) input.classList.add('inline-style');
+            else input.classList.remove('inline-style');
+        });
+
+        // Content Dims
+        document.getElementById('inspBoxDims').textContent =
+            `${Math.round(parseFloat(computed.width))} x ${Math.round(parseFloat(computed.height))}`;
 
         // Size
-        this.setVal('inspWidth', style.width || computed.width);
-        this.setVal('inspHeight', style.height || computed.height);
+        setVal('inspWidth', 'width', computed.width, style.width);
+        setVal('inspHeight', 'height', computed.height, style.height);
 
         // Typography
-        this.setVal('inspFontSize', style.fontSize || computed.fontSize);
+        setVal('inspFontSize', 'fontSize', computed.fontSize, style.fontSize);
 
-        // Colors (Convert RGB to Hex if possible for picker, or keep as is for text)
         const color = this.rgbToHex(computed.color) || computed.color;
-        this.setVal('inspColorText', color);
-        if (color.startsWith('#')) this.setVal('inspColorPicker', color);
+        document.getElementById('inspColorText').value = color;
+        if (color.startsWith('#')) document.getElementById('inspColorPicker').value = color;
 
         // Background
         const bg = this.rgbToHex(computed.backgroundColor) || computed.backgroundColor;
-        this.setVal('inspBgText', bg);
-        if (bg.startsWith('#')) this.setVal('inspBgPicker', bg);
+        document.getElementById('inspBgText').value = bg;
+        if (bg.startsWith('#')) document.getElementById('inspBgPicker').value = bg;
 
         // Border
-        this.setVal('inspRadius', style.borderRadius || computed.borderRadius);
-        this.setVal('inspBorder', style.border || computed.border);
+        setVal('inspRadius', 'borderRadius', computed.borderRadius, style.borderRadius);
+        setVal('inspBorder', 'border', computed.border, style.border);
 
         // Interactions
         const interaction = el.getAttribute('data-interaction');
@@ -435,14 +532,13 @@ class Inspector {
         if (interaction) {
             try {
                 const config = JSON.parse(interaction);
-                this.setVal('inspInteractionAction', config.action);
-                this.setVal('inspInteractionValue', config.value);
+                actionSelect.value = config.action;
+                document.getElementById('inspInteractionValue').value = config.value;
             } catch (e) { console.error('Error parsing interaction', e); }
         } else {
-            this.setVal('inspInteractionAction', '');
-            this.setVal('inspInteractionValue', '');
+            actionSelect.value = '';
+            document.getElementById('inspInteractionValue').value = '';
         }
-        // Trigger visual update
         actionSelect.dispatchEvent(new Event('change'));
     }
 
@@ -452,18 +548,13 @@ class Inspector {
         this.panel.querySelector('.empty-state').style.display = 'block';
     }
 
-    setVal(id, val) {
-        const el = document.getElementById(id);
-        if (el) el.value = val;
-    }
-
     applyStyle(prop, val) {
         if (!this.selectedEl) return;
         this.selectedEl.style[prop] = val;
-        // Visual feedback?
+        // Update visual indication to Inline
+        // This is a bit complex to target specific inputs, but on next select it updates
     }
 
-    // Helper: RGB to Hex
     rgbToHex(rgb) {
         if (!rgb || rgb === 'transparent') return null;
         if (rgb.startsWith('#')) return rgb;
@@ -482,9 +573,7 @@ class Inspector {
     }
 }
 
-// Init
 document.addEventListener('DOMContentLoaded', () => {
-    // Wait for Prototyper to be ready
     setTimeout(() => {
         globalThis.inspector = new Inspector();
     }, 200);

@@ -30,6 +30,10 @@ class StyleEditor {
             const response = await fetch('styles.json');
             if (response.ok) {
                 this.styles = await response.json();
+                // Merge with defaults to ensure structure exists
+                this.styles = { ...this.defaultStyles, ...this.styles,
+                    colors: { ...this.defaultStyles.colors, ...(this.styles.colors || {}) }
+                };
                 this.defaultStyles = structuredClone(this.styles);
                 console.log('✓ Estilos cargados desde styles.json');
             } else {
@@ -47,6 +51,12 @@ class StyleEditor {
     // ============================================
     setDefaults() {
         this.styles = {
+            colors: {
+                primary: '#f59e0b',
+                secondary: '#fbbf24',
+                background: '#0f172a',
+                text: '#f8fafc'
+            },
             cards: {
                 bgOpacity: 0.04,
                 borderRadius: 20,
@@ -97,6 +107,15 @@ class StyleEditor {
         const root = document.documentElement;
         const s = this.styles;
 
+        // Colores Globales
+        if (s.colors) {
+            root.style.setProperty('--primary', s.colors.primary);
+            root.style.setProperty('--secondary', s.colors.secondary);
+            root.style.setProperty('--bg', s.colors.background);
+            root.style.setProperty('--text', s.colors.text);
+            // Derived colors could be calculated here (e.g. surface)
+        }
+
         // Tarjetas
         root.style.setProperty('--card-bg-opacity', s.cards.bgOpacity);
         root.style.setProperty('--card-border-radius', `${s.cards.borderRadius}px`);
@@ -143,7 +162,6 @@ class StyleEditor {
     createPanel() {
         this.panel = document.createElement('div');
         this.panel.id = 'styleEditorPanel';
-        // Añadida clase floating-module para integración con Dock
         this.panel.className = 'style-editor-panel floating-module';
         this.panel.innerHTML = `
             <div class="panel-header">
@@ -151,7 +169,41 @@ class StyleEditor {
                 <button id="closeStylePanel" class="close-btn">&times;</button>
             </div>
             <div class="panel-content">
+                <!-- COLORES -->
+                <div class="control-group">
+                    <h3>🎨 Colores Globales</h3>
+                </div>
+                <div class="control-group">
+                    <label>Primario</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="globalPrimaryColor">
+                        <input type="text" id="globalPrimaryText" placeholder="#...">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Secundario</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="globalSecondaryColor">
+                        <input type="text" id="globalSecondaryText" placeholder="#...">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Fondo</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="globalBgColor">
+                        <input type="text" id="globalBgText" placeholder="#...">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Texto</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="globalTextColor">
+                        <input type="text" id="globalTextText" placeholder="#...">
+                    </div>
+                </div>
+
                 <!-- TARJETAS -->
+                <hr style="border:0; border-top:1px solid var(--border); margin: 1rem 0;">
                 <div class="control-group">
                     <h3>🃏 Tarjetas</h3>
                 </div>
@@ -282,9 +334,9 @@ class StyleEditor {
 
         document.body.appendChild(this.panel);
 
-        // Se ha eliminado createToggleButton ya que se maneja desde el Dock
         this.setupEvents();
         this.setupDockButton();
+        this.updatePanelValues(); // Update initially
     }
 
     setupDockButton() {
@@ -324,6 +376,12 @@ class StyleEditor {
         document.getElementById('closeStylePanel').addEventListener('click', () => {
             this.togglePanel();
         });
+
+        // COLORES
+        this.setupColor('globalPrimaryColor', 'globalPrimaryText', 'primary');
+        this.setupColor('globalSecondaryColor', 'globalSecondaryText', 'secondary');
+        this.setupColor('globalBgColor', 'globalBgText', 'background');
+        this.setupColor('globalTextColor', 'globalTextText', 'text');
 
         // ---- TARJETAS ----
         this.setupSlider('cardBgOpacity', 'cardBgOpacityValue', (v) => {
@@ -450,9 +508,43 @@ class StyleEditor {
     }
 
     // ============================================
+    // MÉTODO: setupColor
+    // ============================================
+    setupColor(pickerId, textId, propName) {
+        const picker = document.getElementById(pickerId);
+        const text = document.getElementById(textId);
+
+        picker.addEventListener('input', (e) => {
+            text.value = e.target.value;
+            if (!this.styles.colors) this.styles.colors = {};
+            this.styles.colors[propName] = e.target.value;
+            this.applyStyles();
+        });
+
+        text.addEventListener('change', (e) => {
+            picker.value = e.target.value;
+            if (!this.styles.colors) this.styles.colors = {};
+            this.styles.colors[propName] = e.target.value;
+            this.applyStyles();
+        });
+    }
+
+    // ============================================
     // MÉTODO: updatePanelValues
     // ============================================
     updatePanelValues() {
+        // Colores
+        if (this.styles.colors) {
+            const updateColor = (pickerId, textId, val) => {
+                document.getElementById(pickerId).value = val;
+                document.getElementById(textId).value = val;
+            };
+            updateColor('globalPrimaryColor', 'globalPrimaryText', this.styles.colors.primary);
+            updateColor('globalSecondaryColor', 'globalSecondaryText', this.styles.colors.secondary);
+            updateColor('globalBgColor', 'globalBgText', this.styles.colors.background);
+            updateColor('globalTextColor', 'globalTextText', this.styles.colors.text);
+        }
+
         // Tarjetas
         document.getElementById('cardBgOpacity').value = this.styles.cards.bgOpacity * 100;
         document.getElementById('cardBgOpacityValue').textContent = `${Math.round(this.styles.cards.bgOpacity * 100)}%`;

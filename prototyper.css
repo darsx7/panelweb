@@ -187,6 +187,29 @@ body.proto-play .dock {
 }
 
 /* --- Palette Panel --- */
+.palette-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+}
+
+.palette-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 8px 0;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.palette-tab:hover { color: var(--text); }
+.palette-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
 .palette-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -228,22 +251,168 @@ body.proto-play .dock {
     cursor: grabbing;
 }
 
-.palette-info {
-    grid-column: span 2;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    margin-top: 1rem;
-    opacity: 0.7;
+/* --- Drag & Drop Visuals --- */
+.proto-drop-marker {
+    position: absolute;
+    height: 4px;
+    background: var(--success, #10b981);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+    transition: top 0.1s, left 0.1s;
 }
 
-/* --- Drop Zone --- */
-.proto-drop-target {
-    outline: 2px dashed var(--success, #10b981) !important;
-    outline-offset: -2px;
-    background: rgba(16, 185, 129, 0.1);
+.proto-ghost-drag {
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid var(--primary);
+    padding: 8px 12px;
+    border-radius: 4px;
+    color: white;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 10000;
 }
 
 body.dragging-active .proto-hover {
     outline: none !important; /* Disable normal hover when dragging */
+}
+
+/* --- Box Model Editor --- */
+.box-model-editor {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+    font-size: 10px;
+    color: var(--text-secondary);
+    user-select: none;
+}
+
+.box-margin, .box-border, .box-padding, .box-content {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed rgba(255,255,255,0.2);
+    border-radius: 2px;
+}
+
+.box-margin {
+    background: rgba(245, 158, 11, 0.1); /* Orangeish for margin */
+    padding: 24px;
+}
+
+.box-border {
+    background: rgba(251, 191, 36, 0.1); /* Yellowish for border */
+    padding: 24px;
+    border-style: solid;
+    border-color: rgba(255,255,255,0.1);
+}
+
+.box-padding {
+    background: rgba(16, 185, 129, 0.1); /* Greenish for padding */
+    padding: 24px;
+}
+
+.box-content {
+    background: rgba(59, 130, 246, 0.1); /* Blueish for content */
+    width: 60px;
+    height: 20px;
+}
+
+.box-label {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 9px;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.box-input {
+    position: absolute;
+    width: 20px;
+    height: 14px;
+    font-size: 9px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    text-align: center;
+    padding: 0;
+}
+.box-input:hover { background: rgba(0,0,0,0.3); }
+.box-input:focus { background: black; outline: 1px solid var(--primary); }
+
+.box-input.top { top: 2px; }
+.box-input.bottom { bottom: 2px; }
+.box-input.left { left: 2px; top: 50%; transform: translateY(-50%); }
+.box-input.right { right: 2px; top: 50%; transform: translateY(-50%); }
+
+.box-dims {
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+/* --- Classes Chips --- */
+.classes-input-container {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.classes-input-container input {
+    flex: 1;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: var(--text);
+}
+.classes-input-container button {
+    background: var(--primary);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    width: 24px;
+    cursor: pointer;
+}
+.chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.class-chip {
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.class-chip span { color: var(--text); }
+.class-chip button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    line-height: 1;
+    margin-left: 4px;
+}
+.class-chip button:hover { color: #f87171; }
+
+/* Computed Style Indicator */
+input.computed-style {
+    font-style: italic;
+    opacity: 0.7;
+    color: var(--text-secondary);
+}
+input.inline-style {
+    font-weight: bold;
+    opacity: 1;
+    color: var(--text);
 }
