@@ -60,6 +60,39 @@ class Inspector {
                             </select>
                         </div>
                     </div>
+
+                    <!-- FLEXBOX CONTROLS (Hidden by default) -->
+                    <div id="inspFlexControls" style="display:none; background:rgba(255,255,255,0.05); padding:8px; border-radius:4px; margin-bottom:10px;">
+                        <div class="control-group">
+                            <label>Direction</label>
+                            <select id="inspFlexDirection">
+                                <option value="row">Row (→)</option>
+                                <option value="column">Column (↓)</option>
+                                <option value="row-reverse">Row Rev (←)</option>
+                                <option value="column-reverse">Col Rev (↑)</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Justify (Eje Principal)</label>
+                            <select id="inspJustifyContent">
+                                <option value="flex-start">Start</option>
+                                <option value="center">Center</option>
+                                <option value="flex-end">End</option>
+                                <option value="space-between">Space Between</option>
+                                <option value="space-around">Space Around</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Align (Eje Cruzado)</label>
+                            <select id="inspAlignItems">
+                                <option value="stretch">Stretch</option>
+                                <option value="flex-start">Start</option>
+                                <option value="center">Center</option>
+                                <option value="flex-end">End</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="control-row">
                         <div class="control-col">
                             <label>Margin (px)</label>
@@ -141,6 +174,7 @@ class Inspector {
                             <option value="alert">Mostrar Alerta</option>
                             <option value="link">Abrir Enlace</option>
                             <option value="scroll">Scroll a Sección</option>
+                            <option value="toggle">Mostrar/Ocultar</option>
                         </select>
                     </div>
                     <div class="control-group" id="inspInteractionValueGroup" style="display:none;">
@@ -251,6 +285,17 @@ class Inspector {
         bind('inspMargin', 'margin');
         bind('inspPadding', 'padding');
 
+        // Flexbox
+        bind('inspFlexDirection', 'flexDirection');
+        bind('inspJustifyContent', 'justifyContent');
+        bind('inspAlignItems', 'alignItems');
+
+        // Logic to show/hide Flex controls
+        document.getElementById('inspDisplay').addEventListener('change', (e) => {
+            const isFlex = e.target.value === 'flex' || e.target.value === 'inline-flex';
+            document.getElementById('inspFlexControls').style.display = isFlex ? 'block' : 'none';
+        });
+
         // Size
         bind('inspWidth', 'width');
         bind('inspHeight', 'height');
@@ -310,7 +355,8 @@ class Inspector {
                 valueGroup.style.display = 'block';
                 if (action === 'alert') label.textContent = 'Mensaje';
                 else if (action === 'link') label.textContent = 'URL (https://...)';
-                else if (action === 'scroll') label.textContent = 'Selector (#id)';
+                else if (action === 'scroll') label.textContent = 'Selector Objetivo (#id)';
+                else if (action === 'toggle') label.textContent = 'Selector Objetivo (#id)';
 
                 this.updateInteraction({ action, value: valueInput.value });
             }
@@ -364,6 +410,16 @@ class Inspector {
 
         // Layout
         this.setVal('inspDisplay', computed.display);
+
+        // Show/Hide Flex Controls
+        const isFlex = computed.display === 'flex' || computed.display === 'inline-flex';
+        document.getElementById('inspFlexControls').style.display = isFlex ? 'block' : 'none';
+        if (isFlex) {
+            this.setVal('inspFlexDirection', style.flexDirection || computed.flexDirection);
+            this.setVal('inspJustifyContent', style.justifyContent || computed.justifyContent);
+            this.setVal('inspAlignItems', style.alignItems || computed.alignItems);
+        }
+
         this.setVal('inspMargin', style.margin || computed.margin);
         this.setVal('inspPadding', style.padding || computed.padding);
 

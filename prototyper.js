@@ -139,6 +139,25 @@ class Prototyper {
             const target = document.querySelector(config.value);
             if (target) target.scrollIntoView({behavior: 'smooth'});
         }
+        else if (config.action === 'toggle') {
+            e.preventDefault();
+            const target = document.querySelector(config.value);
+            if (target) {
+                // Determine current state
+                const currentDisplay = target.style.display || window.getComputedStyle(target).display;
+
+                if (currentDisplay === 'none') {
+                    // Show it
+                    target.style.display = ''; // Try removing inline style first
+                    if (window.getComputedStyle(target).display === 'none') {
+                        target.style.display = 'block'; // Force block if class hides it
+                    }
+                } else {
+                    // Hide it
+                    target.style.display = 'none';
+                }
+            }
+        }
     }
 
     shouldIgnore(el) {
