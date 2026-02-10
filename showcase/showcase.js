@@ -1142,6 +1142,8 @@ class Showcase {
     applyTemplate(templateName) {
         this.currentTemplate = templateName;
         this.applyStyles(templateName);
+        this.buildPage();
+        this.startAnimations();
 
         // Efecto de transición visual
         this.createBurstEffect();
