@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Showcase Eficell</title>
+    <link rel="stylesheet" href="editor.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="editor-container">
+        <aside class="sidebar">
+            <header class="sidebar-header">
+                <h2>Editor Showcase</h2>
+                <button id="saveBtn" class="btn-save">Guardar Cambios</button>
+            </header>
+
+            <div id="sectionsList" class="sections-list">
+                <!-- Sections rendered dynamically -->
+            </div>
+        </aside>
+
+        <main class="preview-area">
+            <iframe id="previewFrame" src="index.html"></iframe>
+        </main>
+    </div>
+
+    <!-- Hidden file input for uploads -->
+    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+    <script src="editor.js"></script>
+</body>
+</html>

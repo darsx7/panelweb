@@ -368,6 +368,19 @@ class Showcase {
 
         // Iniciar animaciones
         this.startAnimations();
+
+        // Escuchar mensajes del editor
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'update-content') {
+                this.updateContent(event.data.content);
+            }
+        });
+    }
+
+    updateContent(newContent) {
+        this.content = newContent;
+        this.buildPage();
+        this.startAnimations(); // Re-iniciar observer
     }
 
     // ============================================
@@ -479,8 +492,9 @@ class Showcase {
 
     buildServices(services) {
         const template = TEMPLATES[this.currentTemplate];
-        const layout = template.layout?.services || 'grid';
+        const layout = services.config?.layout || template.layout?.services || 'grid';
         const columns = template.layout?.columns || 2;
+        const effectClass = services.config?.cardEffect ? 'effect-' + services.config.cardEffect : '';
 
         let contentHtml = '';
 
@@ -488,7 +502,7 @@ class Showcase {
             case 'carousel':
                 // Carrusel horizontal con scroll
                 contentHtml = `
-                    <div class="services-carousel" data-layout="carousel">
+                    <div class="services-carousel " data-layout="carousel">
                         <div class="carousel-track">
                             ${services.items.map((item, i) => `
                                 <div class="carousel-slide service-card" data-delay="${i * 100}">
@@ -545,7 +559,7 @@ class Showcase {
 
             default: // grid
                 contentHtml = `
-                    <div class="services-grid" data-layout="grid" style="--columns: ${columns}">
+                    <div class="services-grid " data-layout="grid" style="--columns: ${columns}">
                         ${services.items.map((item, i) => `
                             <div class="service-card" data-delay="${i * 100}">
                                 <span class="card-icon">${item.icon}</span>
@@ -572,7 +586,7 @@ class Showcase {
                         <h2 class="section-title about-title">${about.title}</h2>
                         <p class="about-description">${about.description}</p>
                         ${about.objective ? `<p class="about-objective"><strong>Objetivo:</strong> ${about.objective}</p>` : ''}
-                        
+
                         <div class="about-cards">
                             <div class="about-card mission-card" data-delay="100">
                                 <div class="about-card-icon">🎯</div>
@@ -586,7 +600,7 @@ class Showcase {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="about-video">
                         <div class="video-container">
                             <video autoplay loop muted playsinline>
@@ -603,15 +617,16 @@ class Showcase {
 
     buildBenefits(benefits) {
         const template = TEMPLATES[this.currentTemplate];
-        const layout = template.layout?.benefits || 'grid';
+        const layout = benefits.config?.layout || template.layout?.benefits || 'grid';
         const columns = template.layout?.columns || 2;
+        const effectClass = benefits.config?.cardEffect ? 'effect-' + benefits.config.cardEffect : '';
 
         let contentHtml = '';
 
         switch (layout) {
             case 'carousel':
                 contentHtml = `
-                    <div class="benefits-carousel" data-layout="carousel">
+                    <div class="benefits-carousel " data-layout="carousel">
                         <div class="carousel-track">
                             ${benefits.items.map((item, i) => `
                                 <div class="carousel-slide benefit-item" data-delay="${i * 80}">
@@ -673,7 +688,7 @@ class Showcase {
 
             default: // grid
                 contentHtml = `
-                    <div class="benefits-grid" data-layout="grid" style="--columns: ${columns}">
+                    <div class="benefits-grid " data-layout="grid" style="--columns: ${columns}">
                         ${benefits.items.map((item, i) => `
                             <div class="benefit-item" data-delay="${i * 80}">
                                 <span class="benefit-icon">${item.icon}</span>
@@ -694,16 +709,17 @@ class Showcase {
 
     buildTeam(team) {
         const template = TEMPLATES[this.currentTemplate];
-        const layout = template.layout?.team || 'grid';
+        const layout = team.config?.layout || template.layout?.team || 'grid';
         // Ajustamos columnas para grid si es necesario, por defecto 3 para equipo suele verse bien
         const columns = layout === 'grid' ? 3 : (template.layout?.columns || 3);
+        const effectClass = team.config?.cardEffect ? 'effect-' + team.config.cardEffect : '';
 
         let contentHtml = '';
 
         switch (layout) {
             case 'carousel':
                 contentHtml = `
-                    <div class="team-carousel" data-layout="carousel">
+                    <div class="team-carousel " data-layout="carousel">
                         <div class="carousel-track">
                             ${team.items.map((item, i) => `
                                 <div class="carousel-slide team-card" data-delay="${i * 100}">
@@ -724,7 +740,7 @@ class Showcase {
 
             default: // grid
                 contentHtml = `
-                    <div class="team-grid" data-layout="grid" style="--columns: ${columns}">
+                    <div class="team-grid " data-layout="grid" style="--columns: ${columns}">
                         ${team.items.map((item, i) => `
                             <div class="team-card" data-delay="${i * 100}">
                                 <div class="team-img-wrapper">
@@ -1239,13 +1255,13 @@ class Showcase {
 
         // Observar elementos - incluye todos los layouts
         document.querySelectorAll(`
-            .section-title, 
-            .service-card, 
-            .benefit-item, 
-            .contact-text, 
-            .contact-form, 
-            .about-card, 
-            .about-description, 
+            .section-title,
+            .service-card,
+            .benefit-item,
+            .contact-text,
+            .contact-form,
+            .about-card,
+            .about-description,
             .about-video,
             .service-list-item,
             .benefit-list-item,
@@ -1267,5 +1283,3 @@ class Showcase {
 document.addEventListener('DOMContentLoaded', () => {
     new Showcase();
 });
-
-
