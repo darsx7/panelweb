@@ -18,7 +18,8 @@
                 "number": "5",
                 "label": "Años de Experiencia"
             }
-        ]
+        ],
+        "config": {}
     },
     "services": {
         "title": "Nuestros Servicios",
@@ -43,7 +44,11 @@
                 "title": "Consultoría Verde",
                 "description": "Asesoría en integración de renovables, reducción de huella de carbono y certificaciones energéticas."
             }
-        ]
+        ],
+        "config": {
+            "layout": "carousel",
+            "cardEffect": "glow"
+        }
     },
     "benefits": {
         "title": "Nuestros 5 Pilares",
@@ -73,7 +78,8 @@
                 "title": "Valor Compartido",
                 "description": "Creamos empleo verde y relaciones de largo plazo basadas en confianza mutua."
             }
-        ]
+        ],
+        "config": {}
     },
     "about": {
         "title": "¿Quiénes Somos?",
@@ -86,7 +92,8 @@
             "title": "Visión",
             "text": "Ser una empresa líder en la región en el desarrollo de proyectos de innovación tecnológica en energías renovables, eficiencia energética e hidrógeno verde, reconocida por integrar soluciones de riego solar, sistemas de bombeo fotovoltaico, nanotecnología y consultoría en eficiencia energética en sus proyectos, para mejorar el desempeño, la eficiencia operativa y la durabilidad de los activos, aportando activamente a la transición energética hacia un modelo más limpio, eficiente y sustentable."
         },
-        "objective": "Reducir al menos un 30% los costos operativos energéticos y mejorar la huella de carbono de nuestros clientes en los próximos 5 años."
+        "objective": "Reducir al menos un 30% los costos operativos energéticos y mejorar la huella de carbono de nuestros clientes en los próximos 5 años.",
+        "config": {}
     },
     "team": {
         "title": "Nuestro Equipo",
@@ -116,11 +123,13 @@
                 "role": "Ing. Químico - Ing. Prevención Riesgo",
                 "image": "https://ui-avatars.com/api/?name=Julio+Delgado&background=random&size=200"
             }
-        ]
+        ],
+        "config": {}
     },
     "contact": {
         "title": "¿Listo Para el Cambio?",
-        "subtitle": "Obtén una evaluación gratuita y personalizada para tu proyecto energético"
+        "subtitle": "Obtén una evaluación gratuita y personalizada para tu proyecto energético",
+        "config": {}
     },
     "footer": {
         "copyright": "© 2026 Eficell Consultores SpA. Energía sostenible para un futuro mejor."
