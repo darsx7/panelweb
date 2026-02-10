@@ -357,11 +357,11 @@ class Showcase {
         // Cargar contenido
         await this.loadContent();
 
+        // Inicializar red (must be before applying template which sets grid)
+        this.initNetwork();
+
         // Aplicar template y estilos
         this.applyTemplate(this.currentTemplate);
-
-        // Inicializar red
-        this.initNetwork();
 
         // Configurar controles
         this.setupControls();
@@ -448,8 +448,9 @@ class Showcase {
 
     updateContent(newContent) {
         this.content = newContent;
+        this.applyStyles(this.currentTemplate);
         this.buildPage();
-        this.startAnimations(); // Re-iniciar observer
+        this.startAnimations();
     }
 
     // ============================================
