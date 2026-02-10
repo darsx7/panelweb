@@ -448,8 +448,9 @@ class Showcase {
 
     updateContent(newContent) {
         this.content = newContent;
+        this.applyStyles(this.currentTemplate);
         this.buildPage();
-        this.startAnimations(); // Re-iniciar observer
+        this.startAnimations();
     }
 
     // ============================================
