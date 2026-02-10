@@ -1,0 +1,142 @@
+/* ============================================
+   NEW GRANULAR EFFECTS
+   ============================================ */
+
+/* --- HOVER EFFECTS --- */
+.hover-scale .service-card:hover,
+.hover-scale .benefit-item:hover,
+.hover-scale .team-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+.hover-lift .service-card:hover,
+.hover-lift .benefit-item:hover,
+.hover-lift .team-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+.hover-glow .service-card:hover,
+.hover-glow .benefit-item:hover,
+.hover-glow .team-card:hover {
+    box-shadow: 0 0 20px var(--primary-glow), 0 0 40px var(--primary-glow);
+    border-color: var(--primary);
+}
+
+.hover-border-flow .service-card,
+.hover-border-flow .benefit-item,
+.hover-border-flow .team-card {
+    position: relative;
+    z-index: 1;
+}
+
+.hover-border-flow .service-card::after,
+.hover-border-flow .benefit-item::after,
+.hover-border-flow .team-card::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    background: linear-gradient(45deg, var(--primary), var(--secondary), var(--primary));
+    background-size: 200%;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    animation: gradientShift 2s linear infinite;
+}
+
+.hover-border-flow .service-card:hover::after,
+.hover-border-flow .benefit-item:hover::after,
+.hover-border-flow .team-card:hover::after {
+    opacity: 1;
+}
+
+/* --- BORDER STYLES --- */
+.border-solid .service-card,
+.border-solid .benefit-item,
+.border-solid .team-card {
+    border: 2px solid var(--border);
+}
+
+.border-neon .service-card,
+.border-neon .benefit-item,
+.border-neon .team-card {
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 5px var(--primary), inset 0 0 10px rgba(245, 158, 11, 0.1);
+}
+
+.border-gradient .service-card,
+.border-gradient .benefit-item,
+.border-gradient .team-card {
+    border: 2px solid transparent;
+    background-image: linear-gradient(var(--surface), var(--surface)),
+                      linear-gradient(135deg, var(--primary), var(--secondary));
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+}
+
+.border-none .service-card,
+.border-none .benefit-item,
+.border-none .team-card {
+    border: none;
+    background: var(--surface);
+}
+
+/* --- INTERACTION: FOCUS (Blur others) --- */
+.interaction-focus:hover .service-card:not(:hover),
+.interaction-focus:hover .benefit-item:not(:hover),
+.interaction-focus:hover .team-card:not(:hover) {
+    filter: blur(4px) grayscale(0.6);
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.interaction-focus .service-card:hover,
+.interaction-focus .benefit-item:hover,
+.interaction-focus .team-card:hover {
+    transform: scale(1.1);
+    z-index: 20;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+/* --- INTERACTION: EXPAND (Click) --- */
+.card-expanded {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    width: 80vw !important;
+    max-width: 600px !important;
+    height: auto !important;
+    z-index: 1000 !important;
+    background: var(--bg-dark) !important;
+    border: 2px solid var(--primary) !important;
+    box-shadow: 0 0 100px rgba(0,0,0,0.8) !important;
+    padding: 3rem !important;
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+.card-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+    z-index: 999;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn { to { opacity: 1; } }
+
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+}

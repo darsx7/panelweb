@@ -357,8 +357,8 @@ class Showcase {
         // Cargar contenido
         await this.loadContent();
 
-        // Generar página
-        this.buildPage();
+        // Aplicar template y estilos
+        this.applyTemplate(this.currentTemplate);
 
         // Inicializar red
         this.initNetwork();
@@ -369,12 +369,81 @@ class Showcase {
         // Iniciar animaciones
         this.startAnimations();
 
+        // Configurar interacciones
+        this.setupInteractions();
+
         // Escuchar mensajes del editor
         window.addEventListener('message', (event) => {
             if (event.data.type === 'update-content') {
                 this.updateContent(event.data.content);
             }
         });
+    }
+
+    setupInteractions() {
+        document.addEventListener('click', (e) => {
+            // Interaction: Expand
+            const expandCard = e.target.closest('.interaction-expand .service-card, .interaction-expand .benefit-item, .interaction-expand .team-card');
+            if (expandCard && !expandCard.classList.contains('card-expanded') && !document.querySelector('.card-expanded')) {
+                this.expandCard(expandCard);
+            }
+        });
+    }
+
+    expandCard(originalCard) {
+        // Create Overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'card-overlay';
+        document.body.appendChild(overlay);
+
+        // Clone Card
+        const clone = originalCard.cloneNode(true);
+        const rect = originalCard.getBoundingClientRect();
+
+        // Set initial position to match original
+        clone.style.position = 'fixed';
+        clone.style.top = rect.top + 'px';
+        clone.style.left = rect.left + 'px';
+        clone.style.width = rect.width + 'px';
+        clone.style.height = rect.height + 'px';
+        clone.style.margin = '0';
+        clone.style.zIndex = '1000';
+        clone.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+
+        document.body.appendChild(clone);
+
+        // Force reflow
+        void clone.offsetWidth;
+
+        // Add expanded class (styles defined in effects.css)
+        clone.classList.add('card-expanded');
+        // Reset inline styles that might conflict with class
+        clone.style.top = '';
+        clone.style.left = '';
+        clone.style.width = '';
+        clone.style.height = '';
+
+        // Close Button
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '×';
+        closeBtn.className = 'close-btn';
+        closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            closeExpanded();
+        };
+        clone.appendChild(closeBtn);
+
+        // Close Logic
+        const closeExpanded = () => {
+            clone.style.opacity = '0';
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                clone.remove();
+                overlay.remove();
+            }, 300);
+        };
+
+        overlay.onclick = closeExpanded;
     }
 
     updateContent(newContent) {
@@ -436,11 +505,27 @@ class Showcase {
 
     buildNavbar(content) {
         const navItems = content.nav?.items || [];
+        const branding = content.branding || { position: 'fixed', behavior: 'shrink', size: 40 };
+
+        // CSS Variables for branding
+        document.documentElement.style.setProperty('--logo-size', `${branding.size}px`);
+
+        let logoHtml;
+        if (branding.logoUrl) {
+            logoHtml = `<img src="${branding.logoUrl}" alt="${content.siteName}" class="brand-logo">`;
+        } else {
+            logoHtml = `
+                <span class="brand-icon">☀️</span>
+                <span class="brand-text">${content.siteName || 'Showcase'}</span>
+            `;
+        }
+
+        const navClass = `navbar ${branding.position === 'fixed' ? 'navbar-fixed' : ''} ${branding.behavior === 'shrink' ? 'navbar-shrinkable' : ''}`;
+
         return `
-            <nav class="navbar">
+            <nav class="${navClass}">
                 <div class="nav-brand">
-                    <span class="brand-icon">☀️</span>
-                    <span class="brand-text">${content.siteName || 'Showcase'}</span>
+                    ${logoHtml}
                 </div>
                 <ul class="nav-menu">
                     ${navItems.map(item => `
@@ -490,11 +575,21 @@ class Showcase {
         `;
     }
 
+    getSectionClasses(config) {
+        if (!config) return '';
+        const hover = config.hover ? `hover-${config.hover}` : '';
+        const border = config.border ? `border-${config.border}` : '';
+        const interaction = config.interaction ? `interaction-${config.interaction}` : '';
+        // Legacy support
+        const legacy = config.cardEffect ? `effect-${config.cardEffect}` : '';
+        return `${hover} ${border} ${interaction} ${legacy}`;
+    }
+
     buildServices(services) {
         const template = TEMPLATES[this.currentTemplate];
         const layout = services.config?.layout || template.layout?.services || 'grid';
         const columns = template.layout?.columns || 2;
-        const effectClass = services.config?.cardEffect ? 'effect-' + services.config.cardEffect : '';
+        const classes = this.getSectionClasses(services.config);
 
         let contentHtml = '';
 
@@ -502,7 +597,7 @@ class Showcase {
             case 'carousel':
                 // Carrusel horizontal con scroll
                 contentHtml = `
-                    <div class="services-carousel " data-layout="carousel">
+                    <div class="services-carousel ${classes}" data-layout="carousel">
                         <div class="carousel-track">
                             ${services.items.map((item, i) => `
                                 <div class="carousel-slide service-card" data-delay="${i * 100}">
@@ -559,7 +654,7 @@ class Showcase {
 
             default: // grid
                 contentHtml = `
-                    <div class="services-grid " data-layout="grid" style="--columns: ${columns}">
+                    <div class="services-grid ${classes}" data-layout="grid" style="--columns: ${columns}">
                         ${services.items.map((item, i) => `
                             <div class="service-card" data-delay="${i * 100}">
                                 <span class="card-icon">${item.icon}</span>
@@ -619,14 +714,14 @@ class Showcase {
         const template = TEMPLATES[this.currentTemplate];
         const layout = benefits.config?.layout || template.layout?.benefits || 'grid';
         const columns = template.layout?.columns || 2;
-        const effectClass = benefits.config?.cardEffect ? 'effect-' + benefits.config.cardEffect : '';
+        const classes = this.getSectionClasses(benefits.config);
 
         let contentHtml = '';
 
         switch (layout) {
             case 'carousel':
                 contentHtml = `
-                    <div class="benefits-carousel " data-layout="carousel">
+                    <div class="benefits-carousel ${classes}" data-layout="carousel">
                         <div class="carousel-track">
                             ${benefits.items.map((item, i) => `
                                 <div class="carousel-slide benefit-item" data-delay="${i * 80}">
@@ -688,7 +783,7 @@ class Showcase {
 
             default: // grid
                 contentHtml = `
-                    <div class="benefits-grid " data-layout="grid" style="--columns: ${columns}">
+                    <div class="benefits-grid ${classes}" data-layout="grid" style="--columns: ${columns}">
                         ${benefits.items.map((item, i) => `
                             <div class="benefit-item" data-delay="${i * 80}">
                                 <span class="benefit-icon">${item.icon}</span>
@@ -712,14 +807,14 @@ class Showcase {
         const layout = team.config?.layout || template.layout?.team || 'grid';
         // Ajustamos columnas para grid si es necesario, por defecto 3 para equipo suele verse bien
         const columns = layout === 'grid' ? 3 : (template.layout?.columns || 3);
-        const effectClass = team.config?.cardEffect ? 'effect-' + team.config.cardEffect : '';
+        const classes = this.getSectionClasses(team.config);
 
         let contentHtml = '';
 
         switch (layout) {
             case 'carousel':
                 contentHtml = `
-                    <div class="team-carousel " data-layout="carousel">
+                    <div class="team-carousel ${classes}" data-layout="carousel">
                         <div class="carousel-track">
                             ${team.items.map((item, i) => `
                                 <div class="carousel-slide team-card" data-delay="${i * 100}">
@@ -740,7 +835,7 @@ class Showcase {
 
             default: // grid
                 contentHtml = `
-                    <div class="team-grid " data-layout="grid" style="--columns: ${columns}">
+                    <div class="team-grid ${classes}" data-layout="grid" style="--columns: ${columns}">
                         ${team.items.map((item, i) => `
                             <div class="team-card" data-delay="${i * 100}">
                                 <div class="team-img-wrapper">
@@ -1046,6 +1141,13 @@ class Showcase {
 
     applyTemplate(templateName) {
         this.currentTemplate = templateName;
+        this.applyStyles(templateName);
+
+        // Efecto de transición visual
+        this.createBurstEffect();
+    }
+
+    applyStyles(templateName) {
         const template = TEMPLATES[templateName];
         const root = document.documentElement;
         const s = template.styles;
@@ -1112,12 +1214,20 @@ class Showcase {
             btn.classList.toggle('active', btn.dataset.effect === this.currentEffect);
         });
 
+        // ====== Global Style Overrides ======
+        if (this.content && this.content.styles) {
+            const st = this.content.styles;
+            if (st.primary) {
+                root.style.setProperty('--primary', st.primary);
+                root.style.setProperty('--primary-glow', this.hexToRgba(st.primary, s.effects.glowIntensity));
+            }
+            if (st.secondary) root.style.setProperty('--secondary', st.secondary);
+            if (st.bgDark) root.style.setProperty('--bg-dark', st.bgDark);
+        }
+
         // ====== Reconstruir página para aplicar nuevo layout ======
         this.buildPage();
         this.startAnimations();
-
-        // Efecto de transición visual
-        this.createBurstEffect();
     }
 
     createBurstEffect() {
@@ -1159,6 +1269,17 @@ class Showcase {
         // Navbar
         const navbar = document.querySelector('.navbar');
         setTimeout(() => navbar.classList.add('animate-in'), 100);
+
+        // Navbar Scroll Effect
+        if (navbar.classList.contains('navbar-shrinkable')) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
 
         // Hero elements
         const heroElements = ['.hero-badge', '.hero-title', '.hero-subtitle', '.hero-buttons'];

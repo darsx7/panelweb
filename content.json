@@ -1,5 +1,16 @@
 {
     "siteName": "Eficell",
+    "branding": {
+        "logoUrl": "",
+        "position": "fixed",
+        "behavior": "shrink",
+        "size": 40
+    },
+    "styles": {
+        "primary": "#f59e0b",
+        "secondary": "#fbbf24",
+        "bgDark": "#1e1e2e"
+    },
     "hero": {
         "title": "Energía Sostenible Para Tu Futuro",
         "subtitle": "Soluciones integrales en energía solar, eficiencia energética e hidrógeno verde. Acompañamos a empresas, instituciones y comunidades desde la evaluación inicial hasta la implementación de sistemas sustentables.",
