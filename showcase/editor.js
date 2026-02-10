@@ -87,9 +87,17 @@ document.addEventListener('DOMContentLoaded', () => {
         sectionsList.innerHTML = '';
 
         // Sections to edit
-        const editableSections = ['hero', 'services', 'benefits', 'team', 'about', 'contact'];
+        const editableSections = ['branding', 'styles', 'hero', 'services', 'benefits', 'team', 'about', 'contact'];
 
         editableSections.forEach(key => {
+            // Ensure branding exists if selected
+            if (key === 'branding' && !content.branding) {
+                content.branding = { position: 'fixed', behavior: 'shrink', size: 40 };
+            }
+            if (key === 'styles' && !content.styles) {
+                content.styles = { primary: '#f59e0b', secondary: '#fbbf24', bgDark: '#1e1e2e' };
+            }
+
             if (!content[key]) return;
             const section = content[key];
 
@@ -120,19 +128,212 @@ document.addEventListener('DOMContentLoaded', () => {
                 section.config.layout = val;
                 updatePreview();
             });
-
-            // Effect Selector
-            const effectGroup = createSelect('Efecto', ['none', 'glow', 'blur', 'slide'], section.config.cardEffect || 'none', (val) => {
-                section.config.cardEffect = val;
-                updatePreview();
-            });
-
             configRow.appendChild(layoutGroup);
-            configRow.appendChild(effectGroup);
-            body.appendChild(configRow);
+
+            // Granular Effects (Only for sections with items)
+            if (['services', 'benefits', 'team'].includes(key)) {
+                // Interaction
+                const interactGroup = createSelect('Interacción (Click)', ['none', 'expand', 'focus'], section.config.interaction || 'none', (val) => {
+                    section.config.interaction = val;
+                    updatePreview();
+                });
+                configRow.appendChild(interactGroup);
+
+                // Hover
+                const hoverGroup = createSelect('Reacción (Hover)', ['none', 'scale', 'lift', 'glow', 'border-flow'], section.config.hover || 'none', (val) => {
+                    section.config.hover = val;
+                    updatePreview();
+                });
+                configRow.appendChild(hoverGroup);
+
+                // Border
+                const borderGroup = createSelect('Estilo Borde', ['none', 'solid', 'neon', 'gradient'], section.config.border || 'none', (val) => {
+                    section.config.border = val;
+                    updatePreview();
+                });
+                configRow.appendChild(borderGroup);
+            } else {
+                // Legacy effect for others (if any)
+                const effectGroup = createSelect('Efecto', ['none', 'glow', 'blur', 'slide'], section.config.cardEffect || 'none', (val) => {
+                    section.config.cardEffect = val;
+                    updatePreview();
+                });
+                configRow.appendChild(effectGroup);
+            }
+
+            // Branding Special Handling
+            if (key === 'branding') {
+                configRow.innerHTML = ''; // Clear default
+
+                // Logo Upload
+                const logoContainer = document.createElement('div');
+                logoContainer.className = 'form-group';
+                logoContainer.innerHTML = '<label>Logo de la Marca</label>';
+                const imgPreview = document.createElement('div');
+                imgPreview.className = 'image-preview';
+                imgPreview.style.height = '60px';
+                imgPreview.style.background = 'rgba(255,255,255,0.1)';
+
+                if (section.logoUrl) {
+                    imgPreview.innerHTML = `<img src="${section.logoUrl}" style="height:100%; object-fit:contain;">`;
+                } else {
+                    imgPreview.innerHTML = '<span>Subir Logo</span>';
+                }
+
+                imgPreview.onclick = () => {
+                    triggerUpload((url) => {
+                        section.logoUrl = url;
+                        updatePreview();
+                        renderSidebar();
+                    });
+                };
+                logoContainer.appendChild(imgPreview);
+                body.appendChild(logoContainer);
+
+                // Position
+                const posGroup = createSelect('Posición', ['fixed', 'absolute'], section.position || 'fixed', (val) => {
+                    section.position = val;
+                    updatePreview();
+                });
+                body.appendChild(posGroup);
+
+                // Behavior
+                const behGroup = createSelect('Comportamiento Scroll', ['shrink', 'none'], section.behavior || 'shrink', (val) => {
+                    section.behavior = val;
+                    updatePreview();
+                });
+                body.appendChild(behGroup);
+
+                // Size Slider
+                const sizeContainer = document.createElement('div');
+                sizeContainer.className = 'form-group';
+                sizeContainer.innerHTML = `<label>Tamaño Logo: <span id="logo-size-val">${section.size || 40}px</span></label>`;
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.min = '20';
+                slider.max = '120';
+                slider.value = section.size || 40;
+                slider.style.width = '100%';
+                slider.oninput = (e) => {
+                    section.size = e.target.value;
+                    document.getElementById('logo-size-val').textContent = e.target.value + 'px';
+                    updatePreview();
+                };
+                sizeContainer.appendChild(slider);
+                body.appendChild(sizeContainer);
+
+            }
+            // Global Styles Handling
+            else if (key === 'styles') {
+                configRow.innerHTML = ''; // Clear default
+
+                const createColorInput = (label, prop) => {
+                    const div = document.createElement('div');
+                    div.className = 'form-group';
+                    div.innerHTML = `<label>${label}</label>`;
+                    const input = document.createElement('input');
+                    input.type = 'color';
+                    input.className = 'form-control';
+                    input.value = section[prop];
+                    input.style.height = '40px';
+                    input.oninput = (e) => {
+                        section[prop] = e.target.value;
+                        updatePreview();
+                    };
+                    div.appendChild(input);
+                    return div;
+                };
+
+                body.appendChild(createColorInput('Color Primario', 'primary'));
+                body.appendChild(createColorInput('Color Secundario', 'secondary'));
+                body.appendChild(createColorInput('Fondo Oscuro', 'bgDark'));
+            }
+            else {
+                body.appendChild(configRow);
+            }
+
+            // Special handling for 'About' section
+            if (key === 'about') {
+                const aboutContainer = document.createElement('div');
+                aboutContainer.className = 'items-list';
+
+                // Description
+                aboutContainer.innerHTML += `
+                    <div class="form-group">
+                        <label>Descripción Principal</label>
+                        <textarea class="form-control" rows="4" id="about-desc">${section.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Objetivo</label>
+                        <textarea class="form-control" rows="2" id="about-obj">${section.objective || ''}</textarea>
+                    </div>
+                `;
+
+                // Mission
+                const missionCard = document.createElement('div');
+                missionCard.className = 'item-card';
+                missionCard.innerHTML = `
+                    <h4 style="margin-bottom:10px; color:var(--text-muted)">Misión</h4>
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" class="form-control" id="about-mission-title" value="${section.mission?.title || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Texto</label>
+                        <textarea class="form-control" rows="3" id="about-mission-text">${section.mission?.text || ''}</textarea>
+                    </div>
+                `;
+                aboutContainer.appendChild(missionCard);
+
+                // Vision
+                const visionCard = document.createElement('div');
+                visionCard.className = 'item-card';
+                visionCard.innerHTML = `
+                    <h4 style="margin-bottom:10px; color:var(--text-muted)">Visión</h4>
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" class="form-control" id="about-vision-title" value="${section.vision?.title || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Texto</label>
+                        <textarea class="form-control" rows="3" id="about-vision-text">${section.vision?.text || ''}</textarea>
+                    </div>
+                `;
+                aboutContainer.appendChild(visionCard);
+
+                body.appendChild(aboutContainer);
+
+                // Bind events after adding to DOM
+                setTimeout(() => {
+                    document.getElementById('about-desc').oninput = (e) => { section.description = e.target.value; updatePreview(); };
+                    document.getElementById('about-obj').oninput = (e) => { section.objective = e.target.value; updatePreview(); };
+
+                    document.getElementById('about-mission-title').oninput = (e) => {
+                        if (!section.mission) section.mission = {};
+                        section.mission.title = e.target.value;
+                        updatePreview();
+                    };
+                    document.getElementById('about-mission-text').oninput = (e) => {
+                        if (!section.mission) section.mission = {};
+                        section.mission.text = e.target.value;
+                        updatePreview();
+                    };
+
+                    document.getElementById('about-vision-title').oninput = (e) => {
+                        if (!section.vision) section.vision = {};
+                        section.vision.title = e.target.value;
+                        updatePreview();
+                    };
+                    document.getElementById('about-vision-text').oninput = (e) => {
+                        if (!section.vision) section.vision = {};
+                        section.vision.text = e.target.value;
+                        updatePreview();
+                    };
+                }, 0);
+            }
 
             // Items List (if exists)
-            if (section.items && Array.isArray(section.items)) {
+            else if (section.items && Array.isArray(section.items)) {
                 const itemsContainer = document.createElement('div');
                 itemsContainer.className = 'items-list';
 

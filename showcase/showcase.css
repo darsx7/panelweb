@@ -260,7 +260,7 @@ body {
    NAVBAR
    ============================================ */
 .navbar {
-    position: fixed;
+    position: absolute; /* Default to absolute for Hero overlap */
     top: 0;
     left: 0;
     right: 0;
