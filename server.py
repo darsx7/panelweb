@@ -17,8 +17,9 @@ USO:
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import json
 import os
-import cgi
 import sys
+import email.parser
+import email.policy
 
 # ---- CONFIGURACIÓN ----
 PORT = 5500                    # Puerto del servidor (5500, 5501, 5502... para nuevos servicios)
@@ -209,28 +210,49 @@ class CustomHandler(SimpleHTTPRequestHandler):
                 if not content_type.startswith('multipart/form-data'):
                     raise Exception('Content-Type debe ser multipart/form-data')
 
-                form = cgi.FieldStorage(
-                    fp=self.rfile,
-                    headers=self.headers,
-                    environ={'REQUEST_METHOD': 'POST'}
-                )
+                content_length = int(self.headers['Content-Length'])
+                body = self.rfile.read(content_length)
+
+                # Construct a dummy email message to parse multipart data
+                headers = f"Content-Type: {content_type}\r\n".encode('utf-8')
+                msg = email.parser.BytesParser(policy=email.policy.default).parsebytes(headers + b"\r\n" + body)
 
                 saved_filename = None
 
-                if 'image' in form:
-                    fileitem = form['image']
-                    if fileitem.filename:
-                        filename = os.path.basename(fileitem.filename)
+                if msg.is_multipart():
+                    for part in msg.iter_parts():
+                        # Extract Content-Disposition
+                        cd = part.get("Content-Disposition")
+                        if not cd:
+                            continue
 
-                        # Asegurar que el directorio uploads existe
-                        if not os.path.exists(UPLOAD_DIR):
-                            os.makedirs(UPLOAD_DIR)
+                        # Parse disposition params manually or rely on header parsing
+                        # part.get_params() for Content-Disposition returns [('form-data', ''), ('name', 'image'), ('filename', 'foo.jpg')]
+                        disposition, params = part.get_content_disposition(), part.get_params(header='Content-Disposition')
 
-                        filepath = os.path.join(UPLOAD_DIR, filename)
-                        with open(filepath, 'wb') as f:
-                            f.write(fileitem.file.read())
+                        if disposition != 'form-data':
+                            continue
 
-                        saved_filename = f'{UPLOAD_DIR}/{filename}'
+                        # Convert params list to dict for easier access
+                        param_dict = {}
+                        if params:
+                            for k, v in params:
+                                param_dict[k] = v
+
+                        if param_dict.get('name') == 'image' and param_dict.get('filename'):
+                            original_filename = param_dict['filename']
+                            filename = os.path.basename(original_filename)
+
+                            # Ensure uploads directory exists
+                            if not os.path.exists(UPLOAD_DIR):
+                                os.makedirs(UPLOAD_DIR)
+
+                            filepath = os.path.join(UPLOAD_DIR, filename)
+                            with open(filepath, 'wb') as f:
+                                f.write(part.get_payload(decode=True))
+
+                            saved_filename = f'{UPLOAD_DIR}/{filename}'
+                            break # Found the file, stop searching
 
                 if saved_filename:
                     self.send_response(200)
@@ -240,7 +262,7 @@ class CustomHandler(SimpleHTTPRequestHandler):
                     self.wfile.write(json.dumps(response).encode('utf-8'))
                     print(f'✓ Imagen guardada: {saved_filename}')
                 else:
-                    raise Exception('No se encontró archivo en el request')
+                    raise Exception('No se encontró archivo "image" en el request')
 
             except Exception as e:
                 self.send_response(400)
