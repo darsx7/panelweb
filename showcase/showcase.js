@@ -63,6 +63,7 @@ const TEMPLATES = {
         layout: {
             services: 'grid',       // grid 2x2
             benefits: 'grid',
+            team: 'grid',
             columns: 2
         }
     },
@@ -116,6 +117,7 @@ const TEMPLATES = {
         layout: {
             services: 'carousel',   // Carrusel horizontal
             benefits: 'featured',   // Grande + pequeños
+            team: 'carousel',
             columns: 1
         }
     },
@@ -169,6 +171,7 @@ const TEMPLATES = {
         layout: {
             services: 'list',       // Lista vertical
             benefits: 'grid',
+            team: 'grid',
             columns: 3
         }
     },
@@ -222,6 +225,7 @@ const TEMPLATES = {
         layout: {
             services: 'featured',   // 1 grande + resto
             benefits: 'carousel',
+            team: 'carousel',
             columns: 2
         }
     },
@@ -275,6 +279,7 @@ const TEMPLATES = {
         layout: {
             services: 'grid',
             benefits: 'list',
+            team: 'grid',
             columns: 4
         }
     },
@@ -328,6 +333,7 @@ const TEMPLATES = {
         layout: {
             services: 'list',
             benefits: 'minimal',    // Solo iconos
+            team: 'grid',
             columns: 1
         }
     }
@@ -409,6 +415,7 @@ class Showcase {
             ${c.services ? this.buildServices(c.services) : ''}
             ${c.about ? this.buildAbout(c.about) : ''}
             ${c.benefits ? this.buildBenefits(c.benefits) : ''}
+            ${c.team ? this.buildTeam(c.team) : ''}
             ${c.contact ? this.buildContact(c.contact) : ''}
             ${this.buildFooter(c)}
         `;
@@ -680,6 +687,59 @@ class Showcase {
         return `
             <section id="beneficios" class="benefits">
                 <h2 class="section-title">${benefits.title}</h2>
+                ${contentHtml}
+            </section>
+        `;
+    }
+
+    buildTeam(team) {
+        const template = TEMPLATES[this.currentTemplate];
+        const layout = template.layout?.team || 'grid';
+        // Ajustamos columnas para grid si es necesario, por defecto 3 para equipo suele verse bien
+        const columns = layout === 'grid' ? 3 : (template.layout?.columns || 3);
+
+        let contentHtml = '';
+
+        switch (layout) {
+            case 'carousel':
+                contentHtml = `
+                    <div class="team-carousel" data-layout="carousel">
+                        <div class="carousel-track">
+                            ${team.items.map((item, i) => `
+                                <div class="carousel-slide team-card" data-delay="${i * 100}">
+                                    <div class="team-img-wrapper">
+                                        <img src="${item.image}" alt="${item.name}" class="team-img">
+                                    </div>
+                                    <h3>${item.name}</h3>
+                                    <p>${item.role}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="carousel-nav">
+                            <button class="carousel-btn prev" onclick="this.closest('.team-carousel').querySelector('.carousel-track').scrollBy(-300, 0)">←</button>
+                            <button class="carousel-btn next" onclick="this.closest('.team-carousel').querySelector('.carousel-track').scrollBy(300, 0)">→</button>
+                        </div>
+                    </div>`;
+                break;
+
+            default: // grid
+                contentHtml = `
+                    <div class="team-grid" data-layout="grid" style="--columns: ${columns}">
+                        ${team.items.map((item, i) => `
+                            <div class="team-card" data-delay="${i * 100}">
+                                <div class="team-img-wrapper">
+                                    <img src="${item.image}" alt="${item.name}" class="team-img">
+                                </div>
+                                <h3>${item.name}</h3>
+                                <p>${item.role}</p>
+                            </div>
+                        `).join('')}
+                    </div>`;
+        }
+
+        return `
+            <section id="equipo" class="team">
+                <h2 class="section-title">${team.title}</h2>
                 ${contentHtml}
             </section>
         `;
@@ -1193,7 +1253,8 @@ class Showcase {
             .featured-main,
             .benefit-main,
             .benefit-small,
-            .benefit-minimal-item
+            .benefit-minimal-item,
+            .team-card
         `).forEach(el => {
             observer.observe(el);
         });

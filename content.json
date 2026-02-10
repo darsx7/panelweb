@@ -88,6 +88,36 @@
         },
         "objective": "Reducir al menos un 30% los costos operativos energéticos y mejorar la huella de carbono de nuestros clientes en los próximos 5 años."
     },
+    "team": {
+        "title": "Nuestro Equipo",
+        "items": [
+            {
+                "name": "Pamela Veas Cortés",
+                "role": "Gerente General",
+                "image": "https://ui-avatars.com/api/?name=Pamela+Veas&background=random&size=200"
+            },
+            {
+                "name": "Pablo Navarro D.",
+                "role": "Gerente Operaciones - Ing. Eléctrico",
+                "image": "https://ui-avatars.com/api/?name=Pablo+Navarro&background=random&size=200"
+            },
+            {
+                "name": "Enrique Palacios",
+                "role": "Ing. Químico - Especialista en Fundición",
+                "image": "https://ui-avatars.com/api/?name=Enrique+Palacios&background=random&size=200"
+            },
+            {
+                "name": "Stephane Acuña",
+                "role": "Ing. Biotecnología - Especialista Proyecto Innovación",
+                "image": "https://ui-avatars.com/api/?name=Stephane+Acuna&background=random&size=200"
+            },
+            {
+                "name": "Julio Delgado",
+                "role": "Ing. Químico - Ing. Prevención Riesgo",
+                "image": "https://ui-avatars.com/api/?name=Julio+Delgado&background=random&size=200"
+            }
+        ]
+    },
     "contact": {
         "title": "¿Listo Para el Cambio?",
         "subtitle": "Obtén una evaluación gratuita y personalizada para tu proyecto energético"
